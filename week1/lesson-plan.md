@@ -163,7 +163,30 @@ Console.WriteLine($"Hello, {player}! You have {score} points.");
 
 ---
 
-### 5️⃣ Loops in C#
+### 5️⃣ Arrays (Single & Multidimensional)
+
+#### **1️⃣ Single-Dimensional Array**
+```csharp
+int[] numbers = { 1, 2, 3, 4, 5 };
+Console.WriteLine(numbers[0]); // Output: 1
+numbers[2] = 99;               // Modify an element
+```
+
+#### **2️⃣ Multidimensional Array (Tic-Tac-Toe Board)**
+```csharp
+char[,] board = {
+    {'X', 'O', 'X'},
+    {'O', 'X', 'O'},
+    {'X', ' ', 'O'}
+};
+Console.WriteLine(board[1, 2]); // Output: O
+```
+
+✅ **Multidimensional arrays are useful for grids like a Tic-Tac-Toe board!**
+
+---
+
+### 6️⃣ Loops in C#
 
 #### **1️⃣ `for` Loop**
 ```csharp
@@ -194,30 +217,18 @@ foreach (string player in players)
 
 ---
 
-### 6️⃣ Arrays (Single & Multidimensional)
+### 7️⃣ User Input & Output
 
-#### **1️⃣ Single-Dimensional Array**
 ```csharp
-int[] numbers = { 1, 2, 3, 4, 5 };
-Console.WriteLine(numbers[0]); // Output: 1
-numbers[2] = 99;               // Modify an element
-```
+Console.Write("Enter your name: ");
+string name = Console.ReadLine();
 
-#### **2️⃣ Multidimensional Array (Tic-Tac-Toe Board)**
-```csharp
-char[,] board = {
-    {'X', 'O', 'X'},
-    {'O', 'X', 'O'},
-    {'X', ' ', 'O'}
-};
-Console.WriteLine(board[1, 2]); // Output: O
+Console.WriteLine($"Welcome, {name}!");
 ```
-
-✅ **Multidimensional arrays are useful for grids like a Tic-Tac-Toe board!**
 
 ---
 
-### 7️⃣ Error Handling with Try-Catch
+### 8️⃣ Error Handling with Try-Catch
 
 ```csharp
 try
@@ -234,7 +245,7 @@ catch (FormatException)
 
 ---
 
-### 8️⃣ Stack vs. Heap Memory
+### 9️⃣ Stack vs. Heap Memory
 #### **Stack (Value Types)**
 - Stores **primitive** data types (`int`, `double`, `bool`, etc.).
 - Fast access.
@@ -255,17 +266,6 @@ object o = null;          // Does not point to any memory location
 Car c2 = c1;              // Points to the same memory location as c1
 Person p1 = new Person(); // Heap
 Person p2 = new Person(); // Heap
-```
-
----
-
-### 9️⃣ User Input & Output
-
-```csharp
-Console.Write("Enter your name: ");
-string name = Console.ReadLine();
-
-Console.WriteLine($"Welcome, {name}!");
 ```
 
 ---
