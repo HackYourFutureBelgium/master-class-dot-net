@@ -68,93 +68,93 @@ RDBMS: *Microsoft SQL Server*, *SQL Server* is one of the most used relational d
 
 #### Lesson 3: Collections, LINQ & Structuring Code
 ([Preparation](week3/preparation.md), [Lesson plan](week3/lesson-plan.md), [Homework](week3/homework.md))
-- Collections in C#: Using lists, arrays for board representation.
+- Collections in C#: Using lists, arrays for board representation
 - Introduction to LINQ:
-  - Checking win conditions efficiently.
+  - Checking win conditions efficiently
 - Singleton Pattern:
-  - Classic vs. modern ASP.NET Core DI approach.
+  - Classic vs. modern ASP.NET Core DI approach
 - Extracting Logic into a Class Library:
-  - Moving `GameService` into a separate project.
-- ⚠️ Logging Errors: Using `try-catch` blocks and logs.
+  - Moving `GameController` into a separate project
+- ⚠️ Logging Errors: Using `try-catch` blocks and logs
 
 ### 🟠 Phase 2: Web Development & API Integration
 
 #### Lesson 4: Introducing MVC & Web Applications
 ([Preparation](week4/preparation.md), [Lesson plan](week4/lesson-plan.md), [Homework](week4/homework.md))
-- MVC Basics: Controllers, Models, Views.
+- MVC Basics: Controllers, Models, Views
 - Building the Game in MVC:
-  - Displaying the board in a Razor View.
-  - Handling user moves via forms.
+  - Displaying the board in a Razor View
+  - Handling user moves via forms
 - ⚠️ Handling API Errors:
-  - Validating requests in controllers.
-  - Returning meaningful error messages.
+  - Validating requests in controllers
+  - Returning meaningful error messages
 
 #### Lesson 5: Creating a Web API & Consuming It
 ([Preparation](week5/preparation.md), [Lesson plan](week5/lesson-plan.md), [Homework](week5/homework.md))
 - Intro to Web APIs:
-  - REST principles.
+  - REST principles
 - Exposing Game Logic via API:
   - `POST /api/game/move`
   - `GET /api/game/state`
 - Consuming API from MVC:
-  - Using JavaScript/Fetch.
+  - Using JavaScript/Fetch
 - ⚠️ API Error Handling:
-  - Custom error responses.
-  - HTTP status codes (`400`, `500`).
+  - Custom error responses
+  - HTTP status codes (`400`, `500`)
 
 ### 🔵 Phase 3: Database, Blazor & Multiplayer
 
 #### Lesson 6: Storing Games in a Database
 ([Preparation](week6/preparation.md), [Lesson plan](week6/lesson-plan.md), [Homework](week6/homework.md))
 - Using ADO.NET vs. EF Core:
-  - Basic SQL queries.
-  - Migrating to EF Core.
+  - Basic SQL queries
+  - Migrating to EF Core
 - Storing Game History:
-  - Saving moves & results.
-- Querying Past Games: Fetching previous results.
+  - Saving moves & results
+- Querying Past Games: Fetching previous results
 - ⚠️ Database Exception Handling:
-  - Catching SqlException errors.
-  - Handling connection issues.
+  - Catching SqlException errors
+  - Handling connection issues
 
 #### Lesson 7: Introducing Blazor for UI
 ([Preparation](week7/preparation.md), [Lesson plan](week7/lesson-plan.md), [Homework](week7/homework.md))
 - Why Blazor?:
-  - Comparing to MVC.
+  - Comparing to MVC
 - Building a Blazor UI:
-  - Interactive board rendering.
-  - Fetching data from the API.
+  - Interactive board rendering
+  - Fetching data from the API
 - ⚠️ UI Error Handling:
-  - Handling API failures.
-  - Preventing invalid user actions.
+  - Handling API failures
+  - Preventing invalid user actions
 
 #### Lesson 8: Multiplayer with SignalR
 ([Preparation](week8/preparation.md), [Lesson plan](week8/lesson-plan.md), [Homework](week8/homework.md))
 - Introduction to SignalR:
-  - Real-time game updates.
+  - Real-time game updates
 - Building Online Multiplayer:
-  - Updating board live.
-  - Handling real-time player moves.
+  - Updating board live
+  - Handling real-time player moves
 - ⚠️ SignalR Error Handling:
-  - Handling disconnects.
-  - Preventing message loss.
+  - Handling disconnects
+  - Preventing message loss
 
 ### 🚀 Final phase: Polishing & Optimization
 
 #### Lesson 9: Improving Performance & Game Logic
 ([Preparation](week9/preparation.md), [Lesson plan](week9/lesson-plan.md), [Homework](week9/homework.md))
 - Optimizing Queries:
-  - Using LINQ efficiently.
-  - Preventing redundant API calls.
+  - Using LINQ efficiently
+  - Preventing redundant API calls
 - Refactoring Code:
-  - Cleaning up the GameService.
+  - Cleaning up the GameService
 - ⚠️ Debugging Best Practices:
-  - Using Rider debugging tools.
+  - Using Rider debugging tools
 
 #### Lesson 10: Final Enhancements & Closing
 ([Preparation](week10/preparation.md), [Lesson plan](week10/lesson-plan.md), [Homework](week10/homework.md))
 - Extending the Game:
-  - Adding a scoring system.
-  - Supporting AI opponents.
+  - Adding a scoring system
+  - Supporting AI opponents
 - Review & Q&A:
-  - Summary of key concepts.
-  - Suggestions for further learning.
+  - Summary of key concepts
+  - Suggestions for further learning
