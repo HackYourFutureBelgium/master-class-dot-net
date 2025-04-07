@@ -279,4 +279,3 @@ if (!board.IsMoveValid(position))
 ---
 
 ## 🚀 End of Lesson 2
-
