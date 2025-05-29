@@ -46,7 +46,7 @@ RDBMS: *Microsoft SQL Server*, *SQL Server* is one of the most used relational d
 ### 🟢 Phase 1: C# Foundations & Console Game
 
 #### Lesson 1: Introduction to C# & Building the Console Game
-([Preparation](week1/preparation.md), [Lesson plan](week1/lesson-plan.md), [Homework](week1/homework.md))
+([Preparation](week01/preparation.md), [Lesson plan](week01/lesson-plan.md), [Homework](week01/homework.md))
 - Introduction to C# and .NET
 - Writing a simple console application
 - Data Types & Variables (strings, integers, booleans, etc.)
@@ -58,7 +58,7 @@ RDBMS: *Microsoft SQL Server*, *SQL Server* is one of the most used relational d
 - Understanding stack vs. heap memory
 
 #### Lesson 2: Object-Oriented Programming & Improving the Game
-([Preparation](week2/preparation.md), [Lesson plan](week2/lesson-plan.md), [Homework](week2/homework.md))
+([Preparation](week02/preparation.md), [Lesson plan](week02/lesson-plan.md), [Homework](week02/homework.md))
 - Object-oriented programming in C#
 - Encapsulation using access modifiers and properties
 - Structuring the game with `Board`, `Player`, and `GameController` classes
@@ -67,7 +67,7 @@ RDBMS: *Microsoft SQL Server*, *SQL Server* is one of the most used relational d
 - Game loop for multiple rounds
 
 #### Lesson 3: Collections, LINQ & Structuring Code
-([Preparation](week3/preparation.md), [Lesson plan](week3/lesson-plan.md), [Homework](week3/homework.md))
+([Preparation](week03/preparation.md), [Lesson plan](week03/lesson-plan.md), [Homework](week03/homework.md))
 - Collections in C#: Using lists, arrays for board representation
 - Introduction to LINQ:
   - Checking win conditions efficiently
@@ -80,7 +80,7 @@ RDBMS: *Microsoft SQL Server*, *SQL Server* is one of the most used relational d
 ### 🟠 Phase 2: Web Development & API Integration
 
 #### Lesson 4: Introducing MVC & Web Applications
-([Preparation](week4/preparation.md), [Lesson plan](week4/lesson-plan.md), [Homework](week4/homework.md))
+([Preparation](week04/preparation.md), [Lesson plan](week04/lesson-plan.md), [Homework](week04/homework.md))
 - MVC Basics: Controllers, Models, Views
 - Building the Game in MVC:
   - Displaying the board in a Razor View
@@ -90,7 +90,7 @@ RDBMS: *Microsoft SQL Server*, *SQL Server* is one of the most used relational d
   - Returning meaningful error messages
 
 #### Lesson 5: Creating a Web API & Consuming It
-([Preparation](week5/preparation.md), [Lesson plan](week5/lesson-plan.md), [Homework](week5/homework.md))
+([Preparation](week05/preparation.md), [Lesson plan](week05/lesson-plan.md), [Homework](week05/homework.md))
 - Intro to Web APIs:
   - REST principles
 - Exposing Game Logic via API:
@@ -105,7 +105,7 @@ RDBMS: *Microsoft SQL Server*, *SQL Server* is one of the most used relational d
 ### 🔵 Phase 3: Database, Blazor & Multiplayer
 
 #### Lesson 6: Storing Games in a Database
-([Preparation](week6/preparation.md), [Lesson plan](week6/lesson-plan.md), [Homework](week6/homework.md))
+([Preparation](week06/preparation.md), [Lesson plan](week06/lesson-plan.md), [Homework](week06/homework.md))
 - Using ADO.NET vs. EF Core:
   - Basic SQL queries
   - Migrating to EF Core
@@ -117,7 +117,7 @@ RDBMS: *Microsoft SQL Server*, *SQL Server* is one of the most used relational d
   - Handling connection issues
 
 #### Lesson 7: Introducing Blazor for UI
-([Preparation](week7/preparation.md), [Lesson plan](week7/lesson-plan.md), [Homework](week7/homework.md))
+([Preparation](week07/preparation.md), [Lesson plan](week07/lesson-plan.md), [Homework](week07/homework.md))
 - Why Blazor?:
   - Comparing to MVC
 - Building a Blazor UI:
@@ -128,7 +128,7 @@ RDBMS: *Microsoft SQL Server*, *SQL Server* is one of the most used relational d
   - Preventing invalid user actions
 
 #### Lesson 8: Multiplayer with SignalR
-([Preparation](week8/preparation.md), [Lesson plan](week8/lesson-plan.md), [Homework](week8/homework.md))
+([Preparation](week08/preparation.md), [Lesson plan](week08/lesson-plan.md), [Homework](week08/homework.md))
 - Introduction to SignalR:
   - Real-time game updates
 - Building Online Multiplayer:
@@ -141,7 +141,7 @@ RDBMS: *Microsoft SQL Server*, *SQL Server* is one of the most used relational d
 ### 🚀 Final phase: Polishing & Optimization
 
 #### Lesson 9: Improving Performance & Game Logic
-([Preparation](week9/preparation.md), [Lesson plan](week9/lesson-plan.md), [Homework](week9/homework.md))
+([Preparation](week09/preparation.md), [Lesson plan](week09/lesson-plan.md), [Homework](week09/homework.md))
 - Optimizing Queries:
   - Using LINQ efficiently
   - Preventing redundant API calls
