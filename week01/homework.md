@@ -8,7 +8,7 @@ Create a simple console-based Tic-Tac-Toe playground where a player can choose a
 
 1. Display a 3x3 Tic-Tac-Toe board using a 2D array:
     ```
-     1 | 2 | 3~~~~
+     1 | 2 | 3
     ---|---|---
      4 | 5 | 6
     ---|---|---
