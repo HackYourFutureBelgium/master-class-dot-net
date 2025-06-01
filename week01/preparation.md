@@ -11,7 +11,7 @@ This week, you’ll:
 
 ## 🧠 Before You Arrive
 
-### Review (if needed)
+ Review (if needed)
 - Basic programming concepts: variables, functions, if statements
 - JavaScript/TypeScript knowledge will help with the syntax
 
