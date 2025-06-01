@@ -2,35 +2,39 @@
 
 ## ✅ Goals for this lesson
 
-This week, we’ll:
-- Explore ways to optimize performance and improve maintainability
-- Practice debugging and refactoring tools in Rider
-- Make our game logic clearer and more efficient
+This week, you’ll:
+
+- Use Rider’s profiling and debugging tools to analyze performance  
+- Optimize your LINQ queries and game logic  
+- Clean up and organize your codebase  
+- Add proper logging and error handling  
+- Optionally explore caching for performance gains  
 
 ---
 
 ## 🧠 Before You Arrive
 
-### Optional Reading
-- [Effective LINQ Performance Tips](https://learn.microsoft.com/en-us/dotnet/csharp/linq/performance)
-- [Debugging Tips in Rider](https://www.jetbrains.com/help/rider/Debugger.html)
+Make sure you understand:
 
-### Optional Video
-- [Intro to Caching in .NET](https://www.youtube.com/watch?v=3rx3hE0vtPU)
+- How your game logic currently works  
+- Where potential performance bottlenecks may occur  
+- How to use `ILogger` for tracing execution in .NET  
+- Basics of LINQ and method chaining  
 
 ---
 
-## 🛠 Setup Checklist
+## 🔧 No New Setup Required
 
-- Rider installed and updated
-- Your full solution (Blazor + API + Core) runs successfully
-- At least one game can be played and stored in the database
+Keep using the same projects (`Core`, `API`, `Blazor`), but prepare by:
+
+- Running your game and looking for slow or unclear sections  
+- Trying out Rider's debugger on your existing game flow  
 
 ---
 
 ## 💬 Think About
 
-- Where do you see redundant code in your solution?
-- Which parts of your game could benefit from clearer structure?
+- Where does your app do unnecessary work?  
+- Are there magic strings, duplicate logic, or unclear responsibilities?  
+- Do you log enough info to understand what happens in production?
 
-See you in class!
