@@ -1,4 +1,4 @@
-# 🏠 Homework
+# 🏠 Homework – Lesson 3: Collections, LINQ & Structuring Code
 
 ## 🎯 Objective
 
@@ -6,7 +6,7 @@ Extend your game logic using collections and LINQ, and practice structuring your
 
 ---
 
-## 📌 Required Tasks
+## 📌 Tasks
 
 ### 1. Track the history of all moves
 

@@ -1,4 +1,4 @@
-# 🏠 Homework
+# 🏠 Homework – Lesson 2: Object-Oriented Programming & Improving the Game
 
 ## 🎯 Objective
 
@@ -6,7 +6,7 @@ Apply object-oriented principles to expand your Tic Tac Toe game, introducing co
 
 ---
 
-## 📌 Required Tasks
+## 📌 Tasks
 
 ### 1. Support dynamic board sizes
 

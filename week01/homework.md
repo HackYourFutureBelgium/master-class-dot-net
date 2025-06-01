@@ -1,4 +1,4 @@
-# 🏠 Homework
+# 🏠 Homework – Lesson 1: Introduction to C# & Building the Console Game
 
 ## 🎯 Objective
 
@@ -6,7 +6,7 @@ Build a basic interactive console-based Tic-Tac-Toe playground. Practice working
 
 ---
 
-## 📌 Required Tasks
+## 📌 Tasks
 
 ### 1. Display a 3x3 Tic-Tac-Toe board
 
