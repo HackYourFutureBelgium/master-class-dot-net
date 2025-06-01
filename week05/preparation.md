@@ -2,52 +2,40 @@
 
 ## ✅ Goals for this lesson
 
-In this session, you'll learn how to:
-- Build a RESTful Web API using ASP.NET Core
-- Expose game logic through HTTP endpoints
-- Return and consume JSON data
-- Handle API errors using proper status codes
+This week, you’ll:
+
+- Learn how Web APIs expose data via HTTP
+- Create a simple API with ASP.NET Core
+- Expose game logic through API endpoints
+- Practice calling the API from front-end code
 
 ---
 
 ## 🧠 Before You Arrive
 
-Spend 15–30 minutes reviewing:
+Review (if needed)
 
-### 📖 Reading (Optional)
-
-- [What is a Web API?](https://learn.microsoft.com/en-us/aspnet/core/web-api/?view=aspnetcore-8.0)
-- [Intro to REST](https://restfulapi.net/)
-- [Model binding and validation](https://learn.microsoft.com/en-us/aspnet/core/mvc/models/model-binding)
+- REST principles: HTTP verbs (GET, POST), status codes
+- Difference between MVC and API projects in .NET
+- JSON structure and basic object serialization
+- Basic JavaScript `fetch()` usage (if consuming API from frontend)
 
 ---
 
 ## 🛠 Setup Checklist
 
-Make sure you:
+No new tools needed this week. Just ensure:
 
-- Can run your TicTacToe MVC app from last week
-- Have your shared game logic in a class library (`TicTacToe.Core`)
-- Are ready to create a new Web API project
-
----
-
-## 🧩 We'll Create
-
-```
-/TicTacToe.Solution
-  /TicTacToe.Core
-  /TicTacToe.Web      (MVC)
-  /TicTacToe.Api      (Web API)
-```
+- You can run your existing solution in **Rider**
+- You can create and run a `.NET Web API` project using the terminal or Rider
+- You can send test requests using either Swagger (enabled by default), Postman, or curl
 
 ---
 
-## 💬 Questions to Consider
+## 💬 Think About
 
-- What’s the difference between returning a View and returning JSON?
-- How would you use this API in a React app or mobile app?
-
----
+- Why is separating backend and frontend useful?
+- What makes a well-designed API? (Think: routes, clarity, validation)
+- How might you store and retrieve state in a stateless API?
 
 See you in class!
