@@ -3,7 +3,7 @@
 ## 📌 Lesson Overview
 - Object-oriented programming in C#
 - Encapsulation using access modifiers and properties
-- Structuring the game with `Board`, `Player`, and `GameController` classes
+- Structuring the game with `Board`, `Player`, and `GameEngine` classes
 - Game state management using enums
 - Defensive programming and input validation
 - Game loop for multiple rounds
@@ -33,68 +33,78 @@ The `Board` class handles board state, move placement, and display logic.
 ```csharp
 class Board
 {
-    private char[,] cells;
+    private readonly char[,] _cells;
 
     public Board()
     {
-        cells = new char[3, 3];
-        int pos = 1;
-        for (int i = 0; i < 3; i++)
-            for (int j = 0; j < 3; j++)
-                cells[i, j] = pos++.ToString()[0];
+        _cells = new char[3, 3];
+        var pos = 1;
+
+        for (var i = 0; i < 3; i++)
+        for (var j = 0; j < 3; j++)
+            _cells[i, j] = pos++.ToString()[0];
     }
 
     public void Display()
     {
         Console.WriteLine();
-        for (int i = 0; i < 3; i++)
+
+        for (var i = 0; i < 3; i++)
         {
             Console.Write(" ");
-            for (int j = 0; j < 3; j++)
-            {
-                Console.Write(cells[i, j]);
-                if (j < 2) Console.Write(" | ");
-            }
-            Console.WriteLine();
-            if (i < 2) Console.WriteLine("---|---|---");
-        }
-        Console.WriteLine();
-    }
 
-    public bool IsMoveValid(int position)
-    {
-        int row = (position - 1) / 3;
-        int col = (position - 1) % 3;
-        return char.IsDigit(cells[row, col]);
+            for (var j = 0; j < 3; j++)
+            {
+                Console.Write(_cells[i, j]);
+
+                if (j < 2)
+                    Console.Write(" | ");
+            }
+
+            Console.WriteLine();
+
+            if (i < 2)
+                Console.WriteLine("---|---|---");
+        }
+
+        Console.WriteLine();
     }
 
     public void PlaceMove(int position, char symbol)
     {
-        int row = (position - 1) / 3;
-        int col = (position - 1) % 3;
-        cells[row, col] = symbol;
+        var row = (position - 1) / 3;
+        var col = (position - 1) % 3;
+        _cells[row, col] = symbol;
     }
 
     public bool CheckWin(char symbol)
     {
-        for (int i = 0; i < 3; i++)
+        for (var i = 0; i < 3; i++)
         {
-            if (cells[i, 0] == symbol && cells[i, 1] == symbol && cells[i, 2] == symbol) return true;
-            if (cells[0, i] == symbol && cells[1, i] == symbol && cells[2, i] == symbol) return true;
+            if (_cells[i, 0] == symbol && _cells[i, 1] == symbol && _cells[i, 2] == symbol)
+                return true;
+
+            if (_cells[0, i] == symbol && _cells[1, i] == symbol && _cells[2, i] == symbol)
+                return true;
         }
-        if (cells[0, 0] == symbol && cells[1, 1] == symbol && cells[2, 2] == symbol) return true;
-        if (cells[0, 2] == symbol && cells[1, 1] == symbol && cells[2, 0] == symbol) return true;
+
+        if (_cells[0, 0] == symbol && _cells[1, 1] == symbol && _cells[2, 2] == symbol)
+            return true;
+
+        if (_cells[0, 2] == symbol && _cells[1, 1] == symbol && _cells[2, 0] == symbol)
+            return true;
 
         return false;
     }
 
     public bool IsDraw()
     {
-        foreach (char cell in cells)
+        foreach (var cell in _cells)
         {
             if (char.IsDigit(cell))
                 return false;
         }
+
         return true;
     }
 }
@@ -137,80 +147,66 @@ enum GameStatus
 
 ---
 
-## 5️⃣ The `GameController` Class
+## 5️⃣ The `GameEngine` Class
 
-The `GameController` class handles turn switching, user input, and delegates board-related tasks.
+The `GameEngine` class handles turn switching, user input, and delegates board-related tasks.
 
 ```csharp
-class GameController
+class GameEngine
 {
-    private Board board;
-    private Player player1;
-    private Player player2;
-    private Player currentPlayer;
-    private GameStatus status;
+    private readonly Board _board;
+    private readonly Player _player1;
+    private readonly Player _player2;
+    private Player _currentPlayer;
+    private GameStatus _status;
 
-    public GameController(Player p1, Player p2)
+    public GameEngine(Player p1, Player p2)
     {
-        board = new Board();
-        player1 = p1;
-        player2 = p2;
-        currentPlayer = player1;
-        status = GameStatus.InProgress;
+        _board = new Board();
+        _player1 = p1;
+        _player2 = p2;
+        _currentPlayer = _player1;
+        _status = GameStatus.InProgress;
     }
 
     public void Start()
     {
-        while (status == GameStatus.InProgress)
+        while (_status == GameStatus.InProgress)
         {
             Console.Clear();
-            board.Display();
+            _board.Display();
 
-            Console.Write($"{currentPlayer.Name} ({currentPlayer.Symbol}), enter a position (1-9): ");
-            string input = Console.ReadLine();
+            Console.Write($"{_currentPlayer.Name} ({_currentPlayer.Symbol}), enter a position (1-9): ");
+            var input = Console.ReadLine();
+            var position = int.Parse(input);
+            _board.PlaceMove(position, _currentPlayer.Symbol);
 
-            if (int.TryParse(input, out int position) && position >= 1 && position <= 9)
+            if (_board.CheckWin(_currentPlayer.Symbol))
             {
-                if (!board.IsMoveValid(position))
-                {
-                    Console.WriteLine("🚫 Position already taken. Press Enter to try again.");
-                    Console.ReadLine();
-                    continue;
-                }
-
-                board.PlaceMove(position, currentPlayer.Symbol);
-
-                if (board.CheckWin(currentPlayer.Symbol))
-                {
-                    status = GameStatus.Win;
-                }
-                else if (board.IsDraw())
-                {
-                    status = GameStatus.Draw;
-                }
-                else
-                {
-                    SwitchPlayer();
-                }
+                _status = GameStatus.Win;
+            }
+            else if (_board.IsDraw())
+            {
+                _status = GameStatus.Draw;
             }
             else
             {
-                Console.WriteLine("❌ Invalid input. Press Enter to try again.");
-                Console.ReadLine();
+                SwitchPlayer();
             }
         }
 
         Console.Clear();
-        board.Display();
-        if (status == GameStatus.Win)
-            Console.WriteLine($"🎉 {currentPlayer.Name} wins!");
-        else if (status == GameStatus.Draw)
+        _board.Display();
+
+        if (_status == GameStatus.Win)
+            Console.WriteLine($"🎉 {_currentPlayer.Name} wins!");
+        else if (_status == GameStatus.Draw)
             Console.WriteLine("🤝 It's a draw!");
     }
 
     private void SwitchPlayer()
     {
-        currentPlayer = (currentPlayer == player1) ? player2 : player1;
+        _currentPlayer = _currentPlayer == _player1 ? _player2 : _player1;
     }
 }
 ```
@@ -227,23 +223,15 @@ class Program
     static void Main()
     {
         Console.Write("Enter name for Player 1 (X): ");
-        string name1 = Console.ReadLine();
+        var name1 = Console.ReadLine();
         Console.Write("Enter name for Player 2 (O): ");
-        string name2 = Console.ReadLine();
+        var name2 = Console.ReadLine();
 
-        Player p1 = new Player(name1, 'X');
-        Player p2 = new Player(name2, 'O');
+        var p1 = new Player(name1, 'X');
+        var p2 = new Player(name2, 'O');
 
-        bool playAgain = true;
-        while (playAgain)
-        {
-            GameController game = new GameController(p1, p2);
-            game.Start();
-
-            Console.Write("Do you want to play again? (y/n): ");
-            string answer = Console.ReadLine().ToLower();
-            playAgain = answer == "y";
-        }
+        var game = new GameEngine(p1, p2);
+        game.Start();
     }
 }
 ```
