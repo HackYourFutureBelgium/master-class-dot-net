@@ -21,7 +21,7 @@ This week, you’ll:
 
 Make sure the following tools are installed before class:
 - ✅ Rider IDE (latest version) – [Download Rider](https://www.jetbrains.com/rider/)
-- ✅ .NET 9 SDK – [Download here](https://dotnet.microsoft.com/en-us/download)
+- ✅ .NET SDK – [Download here](https://dotnet.microsoft.com/en-us/download)
 
 Open Rider and make sure you can:
 - Create a new `.NET Console Application`
