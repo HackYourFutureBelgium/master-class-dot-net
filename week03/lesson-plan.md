@@ -12,148 +12,102 @@
 
 ## 1️⃣ Working with Collections in C#
 
-### Lists
+In .NET, the `List<T>` class is the most commonly used collection. It stores items in a resizable array-like structure and supports indexing, sorting, and filtering.
+
+### 🧱 Creating a List
 
 ```csharp
-List<string> moves = new List<string> { "X", "O", "X" };
+var moves = new List<string> { "X", "O", "X" };
 moves.Add("O");
+Console.WriteLine(moves[2]); // Output: X
 ```
 
-### LINQ
+### 🔎 Iterating and Searching
+
+```csharp
+foreach (var move in moves)
+    Console.WriteLine(move);
+
+if (moves.Contains("X"))
+    Console.WriteLine("X has played.");
+```
+
+---
+
+## 2️⃣ LINQ – Language Integrated Query
+
+LINQ provides query capabilities directly in C#. It’s useful to filter, transform, or group items from collections.
 
 ```csharp
 var xMoves = moves.Where(m => m == "X").Count();
 ```
 
-LINQ makes it easier to filter, sort, and project data from collections.
+### 🧰 More Examples
+
+```csharp
+var recentMoves = moves.TakeLast(2);
+
+var distinctMoves = moves.Distinct();
+
+var grouped = moves.GroupBy(m => m)
+                   .Select(g => $"{g.Key} played {g.Count()} times");
+```
+
+<details>
+
+<summary>Concrete example</summary>
+
+### The `Board.IsDraw()` Method
+
+Originally written as:
+
+```csharp
+public bool IsDraw()
+{
+   foreach (var cell in _cells)
+      if (cell == '.') return false;
+   
+   return true;
+}
+```
+
+Can be simplified using LINQ:
+
+```csharp
+public bool IsDraw()
+    => _cells.Cast<char>().All(cell => cell != '.');
+```
+</details>
 
 ---
 
-## 2️⃣ Extracting Logic into a Class Library
+## 3️⃣ Moving Game Logic to a Class Library
 
-Refactor game logic out of the console app and into a new project:
-📁 `TicTacToe.Core` (Class Library)
+Our game logic is getting more complex. To keep things modular and reusable, we'll extract it into a **class library project**.
 
-```bash
-dotnet new classlib -n TicTacToe.Core
-```
+### 📦 Step-by-Step
 
-In `TicTacToe.Core/GameEngine.cs`:
+1. Create a new class library project:
 
-```csharp
-namespace TicTacToe.Core;
+   ```bash
+   dotnet new classlib -n TicTacToe.Core
+   ```
 
-public class GameEngine
-{
-    private char[] board;
-    private char currentPlayer;
+2. Move all relevant game logic classes (e.g., `Board`, `Player`, `GameController`, etc.) into this project.
 
-    public GameEngine()
-    {
-        board = Enumerable.Range(1, 9).Select(i => i.ToString()[0]).ToArray();
-        currentPlayer = 'X';
-    }
+3. Make sure all moved classes use a proper namespace, e.g.:
 
-    public char[] Board => board;
+   ```csharp
+   namespace TicTacToe.Core;
+   ```
 
-    public char CurrentPlayer => currentPlayer;
+4. Reference the core logic from your console app:
 
-    public bool IsMoveValid(int pos) =>
-        pos >= 1 && pos <= 9 && char.IsDigit(board[pos - 1]);
+   ```bash
+   dotnet add TicTacToe.Console reference ../TicTacToe.Core/TicTacToe.Core.csproj
+   ```
 
-    public void PlaceMove(int pos)
-    {
-        board[pos - 1] = currentPlayer;
-    }
-
-    public bool CheckWin()
-    {
-        int[,] winCombos = new int[,]
-        {
-            {0,1,2}, {3,4,5}, {6,7,8},
-            {0,3,6}, {1,4,7}, {2,5,8},
-            {0,4,8}, {2,4,6}
-        };
-
-        for (int i = 0; i < winCombos.GetLength(0); i++)
-        {
-            if (board[winCombos[i, 0]] == currentPlayer &&
-                board[winCombos[i, 1]] == currentPlayer &&
-                board[winCombos[i, 2]] == currentPlayer)
-                return true;
-        }
-
-        return false;
-    }
-
-    public bool IsDraw() => board.All(c => !char.IsDigit(c));
-
-    public void SwitchPlayer()
-    {
-        currentPlayer = currentPlayer == 'X' ? 'O' : 'X';
-    }
-}
-```
-
-Then reference the class library from your console project:
-
-```bash
-dotnet add reference ../TicTacToe.Core/TicTacToe.Core.csproj
-```
-
----
-
-## 3️⃣ Using the GameEngine in Console App
-
-```csharp
-using TicTacToe.Core;
-
-var game = new GameEngine();
-
-while (true)
-{
-    Console.Clear();
-    PrintBoard(game.Board);
-    Console.Write($"Player {game.CurrentPlayer}, enter move: ");
-    var input = Console.ReadLine();
-
-    if (int.TryParse(input, out int move) && game.IsMoveValid(move))
-    {
-        game.PlaceMove(move);
-
-        if (game.CheckWin())
-        {
-            Console.Clear();
-            PrintBoard(game.Board);
-            Console.WriteLine($"🎉 Player {game.CurrentPlayer} wins!");
-            break;
-        }
-        if (game.IsDraw())
-        {
-            Console.Clear();
-            PrintBoard(game.Board);
-            Console.WriteLine("🤝 It's a draw!");
-            break;
-        }
-
-        game.SwitchPlayer();
-    }
-    else
-    {
-        Console.WriteLine("❌ Invalid move.");
-        Console.ReadLine();
-    }
-}
-
-void PrintBoard(char[] b)
-{
-    for (int i = 0; i < 9; i += 3)
-    {
-        Console.WriteLine($" {b[i]} | {b[i+1]} | {b[i+2]} ");
-        if (i < 6) Console.WriteLine("---|---|---");
-    }
-}
-```
+This separation makes it easier to test, reuse, and plug the game logic into different interfaces like MVC, Web API, or Blazor in later lessons.
 
 ---
 

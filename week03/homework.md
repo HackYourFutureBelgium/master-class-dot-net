@@ -59,8 +59,7 @@ Position 1 was played 2 times
 public class GameStatsService
 {
     public void AddMove(Move move) { ... }
-    public void ListMoves() { ... }
-    public void GetMostPlayedPosition() { ... }
+    public void ClearHistory() { ... }
 }
 ```
 
