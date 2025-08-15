@@ -1,6 +1,7 @@
 # 🧰 Preparation – Lesson 2: Object-Oriented Programming & Improving the Game
 
 ## ✅ Goals for this lesson
+
 This week, you’ll:
 
 - Learn how to structure code using classes, objects, and properties

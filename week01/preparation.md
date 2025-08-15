@@ -3,6 +3,7 @@
 ## ✅ Goals for this lesson
 
 This week, you’ll:
+
 - Understand what C# and .NET are used for
 - Write your first C# program in the console
 - Practice working with variables, strings, arrays, loops, and methods
@@ -11,7 +12,8 @@ This week, you’ll:
 
 ## 🧠 Before You Arrive
 
- Review (if needed)
+Review (if needed)
+
 - Basic programming concepts: variables, functions, if statements
 - JavaScript/TypeScript knowledge will help with the syntax
 
@@ -20,10 +22,12 @@ This week, you’ll:
 ## 🛠 Setup Checklist
 
 Make sure the following tools are installed before class:
+
 - ✅ Rider IDE (latest version) – [Download Rider](https://www.jetbrains.com/rider/)
 - ✅ .NET SDK – [Download here](https://dotnet.microsoft.com/en-us/download)
 
 Open Rider and make sure you can:
+
 - Create a new `.NET Console Application`
 - Run `Console.WriteLine("Hello, world!");` successfully
 

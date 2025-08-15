@@ -1,6 +1,7 @@
 # 🧰 Preparation – Lesson 3: Collections, LINQ & Structuring Code
 
 ## ✅ Goals for this lesson
+
 This week, you’ll:
 
 - Work with `List<T>` and other collections in C#

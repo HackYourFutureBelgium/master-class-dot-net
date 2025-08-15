@@ -1,6 +1,7 @@
 # 🧰 Preparation – Lesson 4: Introducing MVC & Web Applications
 
 ## ✅ Goals for this lesson
+
 This week, you’ll:
 
 - Understand the MVC architecture (Model-View-Controller)
