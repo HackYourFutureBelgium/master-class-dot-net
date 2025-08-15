@@ -6,13 +6,16 @@ public class GameEngine
 {
     private readonly ILogger<GameEngine> _logger;
     private Board? _board;
-    private Player? _player1;
-    private Player? _player2;
     private Player? _currentPlayer;
     private GameStatus _status;
 
+    public Board Board => _board!;
+    public Player Player1 { get; set; }
+    public Player Player2 { get; set; }
+    public Player CurrentPlayer => _currentPlayer!;
+    public GameStatus Status => _status;
     public GameStatsService History { get; }
-    
+
     public GameEngine(ILogger<GameEngine> logger, GameStatsService historyService)
     {
         _logger = logger;
@@ -21,9 +24,9 @@ public class GameEngine
 
     public void SetPlayers(Player p1, Player p2)
     {
-        _player1 = p1;
-        _player2 = p2;
-        _currentPlayer = _player1;
+        Player1 = p1;
+        Player2 = p2;
+        _currentPlayer = Player1;
     }
 
     public void SetBoardSize(int size)
@@ -31,12 +34,6 @@ public class GameEngine
         _board = new Board(size);
         _status = GameStatus.InProgress;
     }
-
-    public GameStatus Status => _status;
-
-    public Player CurrentPlayer => _currentPlayer!;
-
-    public Board Board => _board!;
 
     public bool TryPlayMove(int position)
     {
@@ -71,7 +68,7 @@ public class GameEngine
 
     private void SwitchPlayer()
     {
-        _currentPlayer = _currentPlayer == _player1 ? _player2 : _player1;
+        _currentPlayer = _currentPlayer == Player1 ? Player2 : Player1;
     }
 
     public bool TryUndoLastMove()

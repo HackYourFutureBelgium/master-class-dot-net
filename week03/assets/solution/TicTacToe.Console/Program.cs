@@ -25,10 +25,7 @@ class Program
         Console.Write("Enter name for Player 2 (O): ");
         var name2 = Console.ReadLine();
 
-        var p1 = new Player(name1, 'X');
-        var p2 = new Player(name2, 'O');
-
-        _engine.SetPlayers(p1, p2);
+        _engine.SetPlayers(new Player(name1, 'X'), new Player(name2, 'O'));
 
         var playAgain = true;
 
@@ -76,7 +73,7 @@ class Program
                     : "🤝 It's a draw!"
             );
             ListMoves();
-            Console.WriteLine($"🏆 Scoreboard: {p1.Name} = {p1.Wins}, {p2.Name} = {p2.Wins}");
+            Console.WriteLine($"🏆 Scoreboard: {_engine.Player1.Name} = {_engine.Player1.Wins}, {_engine.Player2.Name} = {_engine.Player2.Wins}");
             DisplayPositionStats();
             ExportMovesToFile(_engine.History.MoveHistory);
             playAgain = AskToPlayAgain(_engine.History.MoveHistory, boardSize);
