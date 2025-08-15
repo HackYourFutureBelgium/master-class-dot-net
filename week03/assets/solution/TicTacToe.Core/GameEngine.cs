@@ -73,4 +73,25 @@ public class GameEngine
     {
         _currentPlayer = _currentPlayer == _player1 ? _player2 : _player1;
     }
+
+    public bool TryUndoLastMove()
+    {
+        if (History.MoveHistory.Count == 0 || _board == null)
+            return false;
+
+        var lastMove = History.MoveHistory.Last();
+        var (row, col) = GetCoordinates(lastMove.Position);
+        _board.ClearCell(row, col);
+        History.MoveHistory.RemoveAt(History.MoveHistory.Count - 1);
+        SwitchPlayer();
+        _status = GameStatus.InProgress;
+        return true;
+    }
+
+    private (int, int) GetCoordinates(int position)
+    {
+        var row = (position - 1) / _board!.Size;
+        var col = (position - 1) % _board!.Size;
+        return (row, col);
+    }
 }

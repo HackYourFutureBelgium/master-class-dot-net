@@ -42,8 +42,24 @@ class Program
             {
                 Console.Clear();
                 PrintBoard(_engine.Board);
+                Console.WriteLine("Type a position number, or 'undo' to undo last move.");
                 Console.Write($"{_engine.CurrentPlayer.Name} ({_engine.CurrentPlayer.Symbol}), enter position: ");
                 var input = Console.ReadLine();
+
+                if (input == "undo")
+                {
+                    if (_engine.TryUndoLastMove())
+                    {
+                        Console.WriteLine("✅ Last move undone.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("❌ Nothing to undo.");
+                    }
+
+                    Console.ReadLine();
+                    continue;
+                }
 
                 if (!int.TryParse(input, out var position) || !_engine.TryPlayMove(position))
                 {
@@ -62,7 +78,8 @@ class Program
             ListMoves();
             Console.WriteLine($"🏆 Scoreboard: {p1.Name} = {p1.Wins}, {p2.Name} = {p2.Wins}");
             DisplayPositionStats();
-            playAgain = AskToPlayAgain();
+            ExportMovesToFile(_engine.History.MoveHistory);
+            playAgain = AskToPlayAgain(_engine.History.MoveHistory, boardSize);
         }
     }
 
@@ -80,22 +97,33 @@ class Program
         }
     }
 
-    static bool AskToPlayAgain()
+    static bool AskToPlayAgain(List<Move> moves, int boardSize)
     {
         while (true)
         {
             Console.WriteLine("What would you like to do next?");
             Console.WriteLine("1. Play again");
-            Console.WriteLine("2. Exit");
+            Console.WriteLine("2. Replay this game");
+            Console.WriteLine("3. Exit");
             var choice = Console.ReadLine();
 
-            if (choice == "1")
-                return true;
+            switch (choice)
+            {
+                case "1":
+                    return true;
 
-            if (choice == "2")
-                return false;
+                case "2":
+                    ReplayGame(moves, boardSize);
+                    // After replay, re-show the menu
+                    continue;
 
-            Console.WriteLine("❌ Please enter 1 or 2.");
+                case "3":
+                    return false;
+
+                default:
+                    Console.WriteLine("❌ Please enter 1, 2, or 3.");
+                    break;
+            }
         }
     }
 
@@ -132,11 +160,11 @@ class Program
     static void ListMoves()
     {
         var ordered = _engine.History.MoveHistory.OrderBy(m => m.Timestamp);
-        System.Console.WriteLine("Move history:");
+        Console.WriteLine("Move history:");
 
         foreach (var move in ordered)
         {
-            System.Console.WriteLine($"Player {move.Symbol} played at {move.Position} on {move.Timestamp}");
+            Console.WriteLine($"Player {move.Symbol} played at {move.Position} on {move.Timestamp}");
         }
     }
 
@@ -147,11 +175,37 @@ class Program
             .OrderBy(g => g.Key)
             .Select(g => new { Position = g.Key, Count = g.Count() });
 
-        System.Console.WriteLine("Position usage across all rounds:");
+        Console.WriteLine("Position usage across all rounds:");
 
         foreach (var stat in grouped)
         {
-            System.Console.WriteLine($"Position {stat.Position} was played {stat.Count} time(s)");
+            Console.WriteLine($"Position {stat.Position} was played {stat.Count} time(s)");
         }
+    }
+
+    static void ExportMovesToFile(List<Move> moves)
+    {
+        var filename = $"moves_{DateTime.Now:yyyyMMdd_HHmmss}.txt";
+        var lines = moves.Select(m => $"{m.Timestamp:HH:mm:ss} - {m.Symbol} played {m.Position}");
+        File.WriteAllLines(filename, lines);
+        Console.WriteLine($"📄 Moves exported to {filename}");
+    }
+
+    static void ReplayGame(List<Move> moves, int boardSize)
+    {
+        var board = new Board(boardSize);
+        Console.Clear();
+
+        foreach (var move in moves.OrderBy(m => m.Timestamp))
+        {
+            board.PlaceMove(move.Position, move.Symbol);
+            PrintBoard(board);
+            Console.WriteLine($"Player {move.Symbol} played at {move.Position}");
+            Thread.Sleep(1000); // 1-second delay
+            Console.Clear();
+        }
+
+        Console.WriteLine("🎬 Replay complete. Press Enter to return to menu.");
+        Console.ReadLine();
     }
 }

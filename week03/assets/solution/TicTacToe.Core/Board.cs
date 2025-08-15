@@ -57,12 +57,15 @@ public class Board
 
     public bool IsDraw() => _cells.Cast<char>().All(cell => cell != '.');
 
-    public int MaxPosition() => _size * _size;
-
     private (int, int) GetCoordinates(int position)
     {
         var row = (position - 1) / _size;
         var col = (position - 1) % _size;
         return (row, col);
+    }
+
+    public void ClearCell(int row, int col)
+    {
+        _cells[row, col] = '.';
     }
 }
