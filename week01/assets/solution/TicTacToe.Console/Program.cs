@@ -19,7 +19,7 @@ class Program
         {
             PrintBoard();
             System.Console.Write($"Player {currentPlayer}, enter a number (1-9): ");
-            string? input = System.Console.ReadLine();
+            string input = System.Console.ReadLine();
 
             if (input?.ToLower() == "exit")
                 break;
@@ -43,7 +43,10 @@ class Program
                 break;
             }
 
-            currentPlayer = currentPlayer == 'X' ? 'O' : 'X';
+            currentPlayer =
+                currentPlayer == 'X'
+                    ? 'O'
+                    : 'X';
         }
 
         System.Console.WriteLine("Game Over.");
