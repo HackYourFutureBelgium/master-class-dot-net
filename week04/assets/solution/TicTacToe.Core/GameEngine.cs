@@ -5,11 +5,10 @@ namespace TicTacToe.Core;
 public class GameEngine
 {
     private readonly ILogger<GameEngine> _logger;
-    private Board? _board;
-    private Player? _currentPlayer;
+    private Player _currentPlayer;
     private GameStatus _status;
 
-    public Board Board => _board!;
+    public Board Board { get; private set; }
     public Player Player1 { get; set; }
     public Player Player2 { get; set; }
     public Player CurrentPlayer => _currentPlayer!;
@@ -31,30 +30,30 @@ public class GameEngine
 
     public void SetBoardSize(int size)
     {
-        _board = new Board(size);
+        Board = new Board(size);
         _status = GameStatus.InProgress;
     }
 
     public bool TryPlayMove(int position)
     {
-        if (_board == null || _currentPlayer == null)
+        if (Board == null || _currentPlayer == null)
             return false;
 
-        if (!_board.IsMoveValid(position))
+        if (!Board.IsMoveValid(position))
         {
             _logger.LogWarning("Invalid move by {PlayerName} at position {Position}.", _currentPlayer.Name, position);
             return false;
         }
 
-        _board.PlaceMove(position, _currentPlayer.Symbol);
+        Board.PlaceMove(position, _currentPlayer.Symbol);
         History.AddMove(new Move { Position = position, Symbol = _currentPlayer.Symbol, Timestamp = DateTime.Now });
 
-        if (_board.CheckWin(_currentPlayer.Symbol))
+        if (Board.CheckWin(_currentPlayer.Symbol))
         {
             _status = GameStatus.Win;
             _currentPlayer.AddWin();
         }
-        else if (_board.IsDraw())
+        else if (Board.IsDraw())
         {
             _status = GameStatus.Draw;
         }
@@ -73,12 +72,12 @@ public class GameEngine
 
     public bool TryUndoLastMove()
     {
-        if (History.MoveHistory.Count == 0 || _board == null)
+        if (History.MoveHistory.Count == 0 || Board == null)
             return false;
 
         var lastMove = History.MoveHistory.Last();
         var (row, col) = GetCoordinates(lastMove.Position);
-        _board.ClearCell(row, col);
+        Board.ClearCell(row, col);
         History.MoveHistory.RemoveAt(History.MoveHistory.Count - 1);
         SwitchPlayer();
         _status = GameStatus.InProgress;
@@ -87,8 +86,8 @@ public class GameEngine
 
     private (int, int) GetCoordinates(int position)
     {
-        var row = (position - 1) / _board!.Size;
-        var col = (position - 1) % _board!.Size;
+        var row = (position - 1) / Board!.Size;
+        var col = (position - 1) % Board!.Size;
         return (row, col);
     }
 }
