@@ -1,0 +1,104 @@
+@model TicTacToe.Core.GameEngine
+@{
+    ViewData["Title"] = "Tic-Tac-Toe";
+    var engine = Model;
+    var board = engine.Board;
+}
+
+<div class="container mt-5">
+    <h2 class="text-center">Tic-Tac-Toe</h2>
+
+    <div class="row mt-4">
+        <div class="col text-center">
+            <h4>
+                Current Player: 
+                <span class="badge bg-primary">
+                    @engine.CurrentPlayer.Name (@engine.CurrentPlayer.Symbol)
+                </span>
+            </h4>
+        </div>
+    </div>
+
+    @if (engine.Status == TicTacToe.Core.GameStatus.Win)
+    {
+        <div class="alert alert-success text-center mt-3">
+            🎉 Player <strong>@engine.CurrentPlayer.Name</strong> wins!
+        </div>
+    }
+    else if (engine.Status == TicTacToe.Core.GameStatus.Draw)
+    {
+        <div class="alert alert-warning text-center mt-3">
+            🤝 It's a draw!
+        </div>
+    }
+
+    <div class="row justify-content-center mt-4">
+        <form method="post" asp-action="MakeMove" class="col-auto">
+            <div class="d-grid gap-2">
+                @for (var i = 0; i < board.Size; i++)
+                {
+                    <div class="d-flex justify-content-center">
+                        @for (var j = 0; j < board.Size; j++)
+                        {
+                            var pos = i * board.Size + j + 1;
+                            var cell = board.GetCell(i, j);
+                            <button type="submit" name="position" value="@pos"
+                                    class="btn btn-outline-dark m-1"
+                                    style="width: 60px; height: 60px; font-size: 24px"
+                                    @(cell != '.' || engine.Status != TicTacToe.Core.GameStatus.InProgress ? "disabled" : "")>
+                                @(cell == '.' ? "" : cell.ToString())
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+        </form>
+    </div>
+
+    <div class="row justify-content-center mt-3">
+        <form method="post" asp-action="Undo" class="col-auto">
+            <button type="submit"
+                    class="btn btn-secondary"
+                    @(engine.Status != TicTacToe.Core.GameStatus.InProgress ? "disabled" : "")>
+                    Undo Last Move
+            </button>
+        </form>
+    </div>
+
+    @if (engine.Status != TicTacToe.Core.GameStatus.InProgress)
+    {
+        <div class="row justify-content-center mt-4">
+            <div class="col-auto text-center">
+                <h4>🏆 Scoreboard</h4>
+                <p>@engine.CurrentPlayer.Name: @engine.CurrentPlayer.Wins win(s)</p>
+                <p>@(engine.CurrentPlayer.Symbol == 'X' ? engine.Player2!.Name : engine.Player1!.Name): @(engine.CurrentPlayer.Symbol == 'X' ? engine.Player2!.Wins : engine.Player1!.Wins) win(s)</p>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mt-4">
+            <div class="col-auto">
+                <h4>📜 Move History</h4>
+                <ol>
+                    @foreach (var move in engine.History.MoveHistory.OrderBy(m => m.Timestamp))
+                    {
+                        <li>Player @move.Symbol → Position @move.Position (@move.Timestamp.ToShortTimeString())</li>
+                    }
+                </ol>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mt-4">
+            <div class="col-auto text-center">
+                <h5>🎮 Game Over — what would you like to do?</h5>
+                <div class="d-flex justify-content-center gap-2 mt-2">
+                    <a href="@Url.Action("NewRound", "Game")" class="btn btn-success">
+                        🔁 Play Another Round
+                    </a>
+                    <a href="/" class="btn btn-outline-primary">
+                        🏠 Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

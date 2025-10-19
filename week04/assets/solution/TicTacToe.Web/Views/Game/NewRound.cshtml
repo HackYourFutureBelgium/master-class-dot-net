@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = "New Round";
+}
+
+<div class="container mt-5 text-center">
+    <h2>Start a New Round</h2>
+    <form method="post" asp-action="StartNewRound">
+        <div class="form-group">
+            <label for="boardSize">Board Size (3–9):</label>
+            <input type="number" class="form-control" name="boardSize" min="3" max="9" value="3" required />
+        </div>
+        <button type="submit" class="btn btn-success mt-3">Start Game</button>
+    </form>
+</div>
