@@ -5,8 +5,6 @@
 - Setting up an ASP.NET Core MVC project
 - Displaying game state using Razor Views
 - Handling user moves through controllers and forms
-- Routing and passing data between requests
-- Validating input and handling errors
 
 ---
 
@@ -26,7 +24,7 @@ This architecture separates responsibilities, making code easier to test, mainta
 Use the .NET CLI or Rider to scaffold an ASP.NET Core MVC app:
 
 ```bash
-dotnet new mvc -n TicTacToe.Web
+dotnet new mvc -n TicTacToe.Api
 ```
 
 Add a reference to the shared game logic project:
@@ -38,8 +36,8 @@ dotnet add reference ../TicTacToe.Core/TicTacToe.Core.csproj
 You should now have:
 ```
 /TicTacToe.Solution
+  /TicTacToe.Api
   /TicTacToe.Core
-  /TicTacToe.Web
 ```
 
 ---
@@ -52,34 +50,42 @@ In `Controllers/GameController.cs`:
 using Microsoft.AspNetCore.Mvc;
 using TicTacToe.Core;
 
+namespace TicTacToe.Web.Controllers;
+
 public class GameController : Controller
 {
-    private static GameEngine _game = new GameEngine();
-
-    public IActionResult Index()
+    private readonly GameEngine _engine;
+    
+    public GameController(GameEngine engine)
     {
-        return View(_game);
+        _engine = engine;
+    }
+
+    [HttpGet]
+    public IActionResult Play()
+    {
+        var player1 = new Player("Player 1", 'X');
+        var player2 = new Player("Player 2", 'O');
+        _engine.SetPlayers(player1, player2);
+        _engine.SetBoardSize(3);
+        return View(_engine);
     }
 
     [HttpPost]
     public IActionResult MakeMove(int position)
     {
-        if (_game.IsMoveValid(position))
-        {
-            _game.PlaceMove(position);
+        _engine.TryPlayMove(position);
 
-            if (_game.CheckWin() || _game.IsDraw())
-                return RedirectToAction("End");
+        if (_engine.Status == GameStatus.Win || _engine.Status == GameStatus.Draw)
+            return RedirectToAction("End");
 
-            _game.SwitchPlayer();
-        }
-
-        return RedirectToAction("Index");
+        return View("Play", _engine);
     }
 
+    [HttpGet]
     public IActionResult End()
     {
-        return View(_game);
+        return View(_engine);
     }
 }
 ```
@@ -88,89 +94,80 @@ public class GameController : Controller
 
 ## 4️⃣ Creating the Views
 
-### 🖼 Views/Game/Index.cshtml
+### 🖼 Views/Game/Play.cshtml
 
-```cshtml
+```html
+@using TicTacToe.Core
+
 @model TicTacToe.Core.GameEngine
 
-<h2>Player @Model.CurrentPlayer, make your move</h2>
+<h2>@Model.CurrentPlayer.Name (@Model.CurrentPlayer.Symbol)</h2>
 
-<form method="post" asp-action="MakeMove">
-    <div>
-        @for (int i = 0; i < 9; i += 3)
-        {
-            <div>
-                @for (int j = 0; j < 3; j++)
-                {
-                    var pos = i + j + 1;
-                    <button type="submit" name="position" value="@pos">
-                        @(char.IsDigit(Model.Board[pos - 1]) ? pos.ToString() : Model.Board[pos - 1].ToString())
-                    </button>
-                }
-            </div>
-        }
-    </div>
-</form>
+<div class="row justify-content-center mt-4">
+    <form method="post" asp-action="MakeMove" class="col-auto">
+        <div class="d-grid gap-2">
+            @for (var i = 0; i < Model.Board.Size; i++)
+            {
+                <div class="d-flex justify-content-center">
+                    @for (var j = 0; j < Model.Board.Size; j++)
+                    {
+                        var pos = i * Model.Board.Size + j + 1;
+                        var cell = Model.Board.GetCell(i, j);
+                        <button type="submit" name="position" value="@pos"
+                                class="btn btn-outline-dark m-1"
+                                style="width: 60px; height: 60px; font-size: 24px"
+                                @(cell != '.' || Model.Status != GameStatus.InProgress ? "disabled" : "")>
+                            @(cell == '.' ? "" : cell.ToString())
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+    </form>
+</div>
 ```
 
-### 🎉 Views/Game/End.cshtml
+### 🖼 Views/Game/End.cshtml
 
-```cshtml
+```html
 @model TicTacToe.Core.GameEngine
 
 <h2>Game Over</h2>
 
-@if (Model.CheckWin())
+@switch (Model.Status)
 {
-    <p>🎉 Player @Model.CurrentPlayer wins!</p>
-}
-else
-{
-    <p>🤝 It's a draw!</p>
+    case TicTacToe.Core.GameStatus.Win:
+        <p>🎉 Player @Model.CurrentPlayer.Name wins!</p>
+        break;
+    case TicTacToe.Core.GameStatus.Draw:
+        <p>🤝 It's a draw!</p>
+        break;
 }
 
-<a href="@Url.Action("Index", "Game")">Play again</a>
+<a href="@Url.Action("Play", "Game")">Play again</a>
 ```
 
----
+### 🖼 Views/Shared/_Layout.cshtml
 
-## 5️⃣ Routing & Navigation
+Add a link to the game in the navigation bar:
 
-- Default route: `/Game/Index`
-- The form posts to `/Game/MakeMove`
-- The result redirects back to `Index` or to `End`
+```html
+...
+<li class="nav-item">
+    <a class="nav-link text-dark" asp-area="" asp-controller="Game" asp-action="Play">Game</a>
+</li>
+...
+```
 
-You can inspect or customize routing in `Program.cs`:
+## 5️⃣ Registering the required services
+
+In `Program.cs`:
 
 ```csharp
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Game}/{action=Index}/{id?}");
-```
-
----
-
-## 6️⃣ Error Handling
-
-### ✅ Server-side validation:
-
-In `MakeMove()`:
-
-```csharp
-if (position < 1 || position > 9)
-{
-    TempData["Error"] = "Invalid move.";
-    return RedirectToAction("Index");
-}
-```
-
-### ✅ Display error in the view:
-
-```cshtml
-@if (TempData["Error"] != null)
-{
-    <p style="color:red">@TempData["Error"]</p>
-}
+...
+builder.Services.AddSingleton<GameStatsService>();
+builder.Services.AddSingleton<GameEngine>();
+...
 ```
 
 ---
