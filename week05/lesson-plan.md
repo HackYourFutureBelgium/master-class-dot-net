@@ -33,86 +33,147 @@ Reference the shared game logic:
 dotnet add reference ../TicTacToe.Core/TicTacToe.Core.csproj
 ```
 
-Disable Swagger if not needed for now:
+Add controller services in `Program.cs` (if missing):
 
 ```csharp
-builder.Services.AddControllers(); // already included
-// comment out builder.Services.AddEndpointsApiExplorer();
-// comment out builder.Services.AddSwaggerGen();
+builder.Services.AddControllers();
 ```
 
 ---
 
-## 3️⃣ Creating the GameApiController
+## 3️⃣ Creating the GameController
 
-In `Controllers/GameApiController.cs`:
+In `Controllers/GameController.cs`:
 
 ```csharp
+using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using TicTacToe.Core;
+using TicTacToe.Api.Requests;
+using TicTacToe.Api.Responses;
+
+namespace TicTacToe.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Consumes(MediaTypeNames.Application.Json)]
+[Produces(MediaTypeNames.Application.Json)]
 public class GameApiController : ControllerBase
 {
-    private static GameEngine _game = new GameEngine();
+    private readonly GameEngine _engine;
+
+    public GameApiController(GameEngine engine)
+    {
+        _engine = engine;
+    }
 
     [HttpGet("state")]
-    public IActionResult GetGameState()
+    public IActionResult GetGameState() => Ok(new Status(_engine.Status, _engine.CurrentPlayer));
+
+    [HttpPost("start")]
+    [ProducesResponseType(typeof(Status), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(Warning), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public IActionResult Start([FromBody] StartRequest request)
     {
-        return Ok(new
+        if (string.IsNullOrWhiteSpace(request.Player1Name)
+         || string.IsNullOrWhiteSpace(request.Player2Name)
+         || request.BoardSize < 3
+         || request.BoardSize > 9)
         {
-            Board = _game.Board,
-            CurrentPlayer = _game.CurrentPlayer
-        });
+            return BadRequest(new Warning("Invalid input data"));
+        }
+
+        if (request.Player1Name == request.Player2Name)
+        {
+            return BadRequest(new Warning("Players cannot have the same name"));
+        }
+
+        var player1 = new Player(request.Player1Name, 'X');
+        var player2 = new Player(request.Player2Name, 'O');
+        _engine.SetPlayers(player1, player2);
+        _engine.SetBoardSize(request.BoardSize);
+        return CreatedAtAction(nameof(GetGameState), new Status(_engine.Status, _engine.CurrentPlayer));
     }
 
     [HttpPost("move")]
+    [ProducesResponseType(typeof(Status), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Warning), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public IActionResult MakeMove([FromBody] int position)
     {
-        if (!_game.IsMoveValid(position))
-            return BadRequest(new { Message = "Invalid move." });
+        if (_engine.Status != GameStatus.InProgress)
+            return BadRequest();
 
-        _game.PlaceMove(position);
+        if (!_engine.TryPlayMove(position))
+            return BadRequest(new Warning("Invalid move"));
 
-        if (_game.CheckWin())
-            return Ok(new { Message = "Win", Winner = _game.CurrentPlayer });
-
-        if (_game.IsDraw())
-            return Ok(new { Message = "Draw" });
-
-        _game.SwitchPlayer();
-        return Ok(new { Message = "Continue", NextPlayer = _game.CurrentPlayer });
+        return Ok(new Status(_engine.Status, _engine.CurrentPlayer));
     }
 
-    [HttpPost("reset")]
-    public IActionResult Reset()
+    [HttpPost("undo")]
+    [ProducesResponseType(typeof(Status), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Warning), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public IActionResult Undo()
     {
-        _game = new GameEngine();
-        return Ok(new { Message = "Game reset" });
+        if (!_engine.TryUndoLastMove())
+            return BadRequest(new Warning("No moves to undo"));
+
+        return Ok(new Status(_engine.Status, _engine.CurrentPlayer));
     }
 }
 ```
 
 ---
 
-## 4️⃣ Testing the API (Optional)
+## 4️⃣ Creating the Request/Response model
+
+In `Requests/StartRequest.cs`:
+
+```csharp
+namespace TicTacToe.Api.Requests;
+
+public record StartRequest(string Player1Name, string Player2Name, int BoardSize);
+
+```
+
+In `Responses/Status.cs`:
+
+```csharp
+namespace TicTacToe.Api.Requests;
+
+public record Status(GameStatus GameStatus, Player CurrentPlayer);
+
+```
+
+In `Responses/Warning.cs`:
+
+```csharp
+namespace TicTacToe.Api.Requests;
+
+public record Warning(string Message);
+
+```
+
+---
+
+## 5️⃣ Testing the API (Optional)
 
 Use tools like:
 - **Postman**
 - **cURL**
-- Swagger UI (enabled by default)
 - Or your browser for `GET` endpoints
 
 Example request with cURL:
 
 ```bash
-curl -X POST http://localhost:5000/api/gameapi/move -H "Content-Type: application/json" -d "5"
+curl -X POST http://localhost:5000/api/game/status -H "Content-Type: application/json" -d "5"
 ```
 
 ---
 
-## 5️⃣ Calling the API from MVC (Client Options)
+## 6️⃣ Calling the API from MVC (Client Options)
 
 You can consume the API from:
 - ✅ JavaScript (fetch)
@@ -124,7 +185,7 @@ You can consume the API from:
 ```html
 <script>
 async function makeMove(pos) {
-    const response = await fetch('/api/gameapi/move', {
+    const response = await fetch('/api/game/move', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(pos)
@@ -140,7 +201,7 @@ async function makeMove(pos) {
 
 ---
 
-## 6️⃣ Error Handling & Status Codes
+## 7️⃣ Error Handling & Status Codes
 
 - Use `400 Bad Request` for invalid input
 - Use `200 OK` with a clear message on success
@@ -150,8 +211,12 @@ async function makeMove(pos) {
 
 ```json
 {
-  "message": "Win",
-  "winner": "X"
+  "gameStatus": 1,
+  "currentPlayer": {
+    "name": "Player 1",
+    "symbol": "X",
+    "wins": 2
+  }
 }
 ```
 
