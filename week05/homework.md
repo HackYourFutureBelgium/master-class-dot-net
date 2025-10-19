@@ -18,7 +18,7 @@ Use your Web API to play TicTacToe through a simple web interface. Learn to send
 
 ### 2. Connect to your API
 
-- On each button click, send a `POST` request to `/api/gameapi/move`
+- On each button click, send a `POST` request to `/api/game/move`
 - After each move:
   - Check if the game is over
   - Update the board and show a message
@@ -27,23 +27,15 @@ Use your Web API to play TicTacToe through a simple web interface. Learn to send
 
 ### 3. Add reset functionality
 
-- Add a “Reset Game” button that calls `POST /api/gameapi/reset`
+- Add a “Reset Game” button that calls `POST /api/game/reset`
 - Clear the board and reset game state
-
----
-
-### 4. Handle errors gracefully
-
-- If the move is invalid (e.g., cell taken), show an error message to the user
-- Display the result from the API (`Win`, `Draw`, `Continue`)
 
 ---
 
 ## 🧩 Bonus Challenges
 
-- Track the number of wins per player (persist in memory or `TempData`)
+- Add an endpoint to get the overall game stats
 - Add keyboard shortcuts or accessibility improvements
-- Add a theme or minimal styling (just for fun!)
 
 ---
 
