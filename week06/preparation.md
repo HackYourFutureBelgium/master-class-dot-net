@@ -31,10 +31,10 @@ Make sure the following are installed and working:
 
 - ✅ SQL Server (choose one):
   - [SQL Server Developer Edition](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (Windows)
-  - [SQL Server Docker image](https://hub.docker.com/_/microsoft-mssql-server) (Mac/Linux)
+  - [SQL Server Docker image](https://hub.docker.com/r/microsoft/azure-sql-edge) (Mac/Linux)
 - ✅ A SQL client:
-  - [SQL Server Management Studio (SSMS)](https://aka.ms/ssms)
-  - or [Azure Data Studio](https://learn.microsoft.com/en-us/sql/azure-data-studio/)
+  - [SQL Server Management Studio (SSMS)](https://aka.ms/ssms) (Windows)
+  - or [JetBrains' DataGrip](https://www.jetbrains.com/datagrip/)
 - ✅ .NET 9 SDK – [Download here](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
 - ✅ Rider IDE – Already installed from previous lessons
 
