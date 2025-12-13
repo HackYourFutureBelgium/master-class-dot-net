@@ -1,8 +1,8 @@
-namespace TicTacToe.Core;
-
-public enum GameStatus
-{
-    InProgress,
-    Win,
-    Draw
-}
+// namespace TicTacToe.Core;
+//
+// public enum GameStatus
+// {
+//     InProgress,
+//     Win,
+//     Draw
+// }
