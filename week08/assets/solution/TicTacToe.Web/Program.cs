@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.ResponseCompression;
 using TicTacToe.Core;
 using TicTacToe.Web;
 using TicTacToe.Web.Components;
@@ -9,8 +10,15 @@ builder.Services.AddSingleton<GameStatsService>();
 builder.Services.AddSingleton<GameEngine>();
 builder.Services.AddSingleton<GameRoomManager>();
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+builder.Services.AddSignalR();
+builder.Services.AddResponseCompression(o =>
+{
+    o.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat([ "application/octet-stream" ]);
+});
 
 var app = builder.Build();
+
+app.UseResponseCompression();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -27,5 +35,7 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapHub<GameHub>("/gamehub");
 
 app.Run();

@@ -26,23 +26,11 @@ Make sure you’ve reviewed:
 
 You’ll need the following NuGet packages installed before class:
 
-✅ In **TicTacToe.Api**:
+✅ In **TicTacToe.Web**:
 ```bash
 dotnet add package Microsoft.AspNetCore.SignalR
-```
-
-✅ In **TicTacToe.Blazor**:
-```bash
 dotnet add package Microsoft.AspNetCore.SignalR.Client
-dotnet add package Microsoft.AspNetCore.SignalR.Protocols.Json
 ```
-
-Also make sure you can:
-
-- Run both the API and Blazor apps simultaneously (TicTacToe.Api + TicTacToe.Blazor)
-- Verify both are up in your browser (e.g. https://localhost:5001 and https://localhost:5002)
-
----
 
 ## 💬 Think About
 

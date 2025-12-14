@@ -44,11 +44,4 @@ Enable real-time communication between two players using SignalR.
 
 ---
 
-## 📦 Submission
-
-- Push your updated multiplayer Blazor app to GitHub
-- Ensure at least two browser tabs can play against each other
-
----
-
 Well played, team player! 🧑‍🤝‍🧑

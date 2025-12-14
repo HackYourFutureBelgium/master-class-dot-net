@@ -1,0 +1,141 @@
+@page "/multiplayer/{GameId}"
+
+@using Microsoft.AspNetCore.SignalR.Client
+@using TicTacToe.Core
+@using TicTacToe.Core.DataTransferObjects
+
+@inject NavigationManager Nav
+
+<h2>Tic Tac Toe Multiplayer</h2>
+
+@if (!connected)
+{
+    <div class="mb-3">
+        <label>Your name</label>
+        <input class="form-control" @bind="playerName" />
+    </div>
+
+    <div class="mb-3">
+        <label>Board size</label>
+        <input type="number" class="form-control" min="3" max="9" @bind="boardSize" />
+    </div>
+
+    <button class="btn btn-primary" @onclick="Connect">Join</button>
+}
+else if (state is null)
+{
+    <p>Loading game…</p>
+}
+else
+{
+    <div class="alert alert-info">
+        GameId: <strong>@state.GameId</strong>
+        <br />
+        Turn: <strong>@state.CurrentSymbol</strong>
+        <br />
+        Status: <strong>@state.Status</strong>
+        @if (state.WinnerName is not null)
+        {
+            <br />
+            <span>Winner: <strong>@state.WinnerName</strong></span>
+        }
+    </div>
+
+    <div class="mb-2">
+        <span class="badge bg-dark me-2">X</span> @state.PlayerXName
+        <span class="badge bg-dark ms-3 me-2">O</span> @state.PlayerOName
+        <span class="badge bg-secondary ms-3">Spectators: @lobby?.Spectators</span>
+    </div>
+
+    <div class="d-grid gap-2">
+        @for (var i = 0; i < state.BoardSize; i++)
+        {
+            <div class="d-flex">
+                @for (var j = 0; j < state.BoardSize; j++)
+                {
+                    var pos = i * state.BoardSize + j + 1;
+                    var cell = state.BoardFlat[i * state.BoardSize + j];
+
+                    <button class="btn btn-outline-dark m-1"
+                            style="width:60px;height:60px;font-size:24px"
+                            disabled="@(cell != '.' || state.Status != GameStatus.InProgress)"
+                            @onclick="() => Play(pos)">
+                        @(cell == '.' ? "" : cell.ToString())
+                    </button>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="mt-3">
+        <button class="btn btn-secondary" @onclick="Undo">Undo</button>
+        <button class="btn btn-success ms-2" @onclick="() => NewRound(state.BoardSize)">New Round (same size)</button>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(error))
+    {
+        <div class="alert alert-danger mt-3">@error</div>
+    }
+}
+
+@code {
+    [Parameter] public string GameId { get; set; } = "";
+
+    private HubConnection? hub;
+    private bool connected;
+
+    private string playerName = "";
+    private int boardSize = 3;
+
+    private GameStateDto? state;
+    private LobbyDto? lobby;
+    private string error = "";
+
+    private async Task Connect()
+    {
+        error = "";
+
+        hub = new HubConnectionBuilder()
+            .WithUrl(Nav.ToAbsoluteUri("/gamehub"))
+            .WithAutomaticReconnect()
+            .Build();
+
+        hub.On<GameStateDto>("StateUpdated", s =>
+        {
+            state = s;
+            InvokeAsync(StateHasChanged);
+        });
+
+        hub.On<LobbyDto>("LobbyUpdated", l =>
+        {
+            lobby = l;
+            InvokeAsync(StateHasChanged);
+        });
+
+        hub.On<string>("Error", msg =>
+        {
+            error = msg;
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hub.StartAsync();
+        connected = true;
+
+        await hub.InvokeAsync("CreateOrJoin", GameId, playerName, boardSize);
+    }
+
+    private Task Play(int position)
+        => hub!.InvokeAsync("PlayMove", GameId, position);
+
+    private Task Undo()
+        => hub!.InvokeAsync("Undo", GameId);
+
+    private Task NewRound(int size)
+        => hub!.InvokeAsync("NewRound", GameId, size);
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hub is not null)
+            await hub.DisposeAsync();
+    }
+}
