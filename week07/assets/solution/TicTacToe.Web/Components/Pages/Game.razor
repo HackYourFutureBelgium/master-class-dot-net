@@ -71,28 +71,12 @@
             </div>
         }
 
-        <!-- BOARD (replaces Play.cshtml board/form) -->
+        <!-- BOARD -->
         <div class="row justify-content-center mt-4">
             <div class="col-auto">
-                <div class="d-grid gap-2">
-                    @for (var i = 0; i < Board.Size; i++)
-                    {
-                        <div class="d-flex justify-content-center">
-                            @for (var j = 0; j < Board.Size; j++)
-                            {
-                                var pos = i * Board.Size + j + 1;
-                                var cell = Board.GetCell(i, j);
-
-                                <button class="btn btn-outline-dark m-1"
-                                        style="width: 60px; height: 60px; font-size: 24px"
-                                        disabled="@(cell != '.' || Engine.Status != GameStatus.InProgress)"
-                                        @onclick="() => MakeMove(pos)">
-                                    @(cell == '.' ? "" : cell.ToString())
-                                </button>
-                            }
-                        </div>
-                    }
-                </div>
+                <GameBoard Board="@Board"
+                           IsInProgress="@(Engine.Status == GameStatus.InProgress)"
+                           OnCellClicked="MakeMove" />
             </div>
         </div>
 
@@ -179,7 +163,7 @@
 
     private bool IsGameStarted => Engine.Board != null;
 
-    private Board? Board => Engine.Board;
+    private Board Board => Engine.Board;
 
     protected override void OnInitialized()
     {

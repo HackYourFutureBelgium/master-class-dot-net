@@ -1,0 +1,25 @@
+@using TicTacToe.Core
+
+<div class="d-grid gap-2">
+    @for (var i = 0; i < Board.Size; i++)
+    {
+        <div class="d-flex justify-content-center">
+            @for (var j = 0; j < Board.Size; j++)
+            {
+                var pos = i * Board.Size + j + 1;
+                var cell = Board.GetCell(i, j);
+
+                <Cell Value="@cell"
+                      Index="@pos"
+                      Disabled="@(cell != '.' || !IsInProgress)"
+                      OnClicked="OnCellClicked" />
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public Board Board { get; set; }
+    [Parameter] public bool IsInProgress { get; set; }
+    [Parameter] public EventCallback<int> OnCellClicked { get; set; }
+}

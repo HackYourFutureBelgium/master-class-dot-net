@@ -1,0 +1,13 @@
+<button class="btn btn-outline-dark m-1"
+        style="width: 60px; height: 60px; font-size: 24px"
+        disabled="@Disabled"
+        @onclick="() => OnClicked.InvokeAsync(Index)">
+    @(Value == '.' ? "" : Value.ToString())
+</button>
+
+@code {
+    [Parameter] public char Value { get; set; }
+    [Parameter] public int Index { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public EventCallback<int> OnClicked { get; set; }
+}

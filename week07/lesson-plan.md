@@ -42,16 +42,16 @@ What is new in Blazor:
 We'll create a new project:
 
 ```bash
-dotnet new blazorserver -n TicTacToe.Blazor
+dotnet new blazor -n TicTacToe.Web
 ```
 
 Add reference to:
 - `TicTacToe.Core` (game logic)
-- `TicTacToe.Api` (optional, for API integration)
 
 Where things live:
-- `Pages/` for routed pages
-- `Shared/` for reusable components
+- `Components/Pages/` for routed pages
+- `Components/Layout/` for layout components
+- `Components/` for reusable components
 - `wwwroot/` for static assets
 
 ---
@@ -231,7 +231,14 @@ else
 
 ## 9️⃣ Forms and Validation (Intro)
 
-Use `EditForm` and data annotations for basic validation:
+For simple cases, plain `<input>` elements with `@bind` are sufficient — and that is what the solution uses:
+
+```razor
+<input class="form-control" @bind="player1Name" placeholder="Player 1" />
+<button @onclick="StartGame">Start Game</button>
+```
+
+When you have multiple fields with validation rules, `EditForm` and data annotations offer a more structured approach:
 
 ```razor
 <EditForm Model="model" OnValidSubmit="StartGame">
@@ -275,6 +282,8 @@ Blazor uses the same DI container as ASP.NET Core:
 ```
 
 Use DI for services like API clients, state containers, and shared logic.
+
+> **Note on lifetime:** In this solution, `GameEngine` is registered as `AddSingleton`, meaning all browser tabs share the same game instance. This is intentional for simplicity — it lets you focus on learning Blazor without worrying about per-user state. In lesson 8, SignalR will introduce a proper room-based model where each game is isolated.
 
 ---
 
@@ -448,34 +457,62 @@ Example (wrong vs right):
 
 ---
 
-## 1️⃣2️⃣f Componentization Walkthrough (Board → Cell)
+## 1️⃣2️⃣f Componentization Walkthrough (GameBoard → Cell)
 
-Split the board into a reusable `Board` and `Cell`:
+Split the board into a reusable `GameBoard` and `Cell`:
 
-`Board.razor`
+`GameBoard.razor`
 ```razor
-@for (int i = 0; i < 9; i++)
-{
-    <Cell Value="@Board[i]" Index="i" OnClicked="OnCellClicked" />
-}
+@using TicTacToe.Core
+
+<div class="d-grid gap-2">
+    @for (var i = 0; i < GameBoard.Size; i++)
+    {
+        <div class="d-flex justify-content-center">
+            @for (var j = 0; j < GameBoard.Size; j++)
+            {
+                var pos = i * GameBoard.Size + j + 1;
+                var cell = GameBoard.GetCell(i, j);
+
+                <Cell Value="@cell"
+                      Index="@pos"
+                      Disabled="@(cell != '.' || !IsInProgress)"
+                      OnClicked="OnCellClicked" />
+            }
+        </div>
+    }
+</div>
 
 @code {
-    [Parameter] public string[] Board { get; set; } = Array.Empty<string>();
+    [Parameter] public TicTacToe.Core.Board GameBoard { get; set; } = default!;
+    [Parameter] public bool IsInProgress { get; set; }
     [Parameter] public EventCallback<int> OnCellClicked { get; set; }
 }
 ```
 
 `Cell.razor`
 ```razor
-<button @onclick="() => OnClicked.InvokeAsync(Index)">
-    @Value
+<button class="btn btn-outline-dark m-1"
+        style="width: 60px; height: 60px; font-size: 24px"
+        disabled="@Disabled"
+        @onclick="() => OnClicked.InvokeAsync(Index)">
+    @(Value == '.' ? "" : Value.ToString())
 </button>
 
 @code {
-    [Parameter] public string? Value { get; set; }
+    [Parameter] public char Value { get; set; }
     [Parameter] public int Index { get; set; }
+    [Parameter] public bool Disabled { get; set; }
     [Parameter] public EventCallback<int> OnClicked { get; set; }
 }
+```
+
+In `Game.razor`, the board section becomes:
+
+```razor
+<GameBoard GameBoard="@Board"
+           IsInProgress="@(Engine.Status == GameStatus.InProgress)"
+           OnCellClicked="MakeMove" />
 ```
 
 ---

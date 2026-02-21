@@ -1,5 +1,4 @@
 using TicTacToe.Core;
-using TicTacToe.Web;
 using TicTacToe.Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,7 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddSingleton<GameStatsService>();
 builder.Services.AddSingleton<GameEngine>();
-builder.Services.AddSingleton<GameRoomManager>();
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
 
 var app = builder.Build();
