@@ -5,7 +5,7 @@
 This week, you’ll:
 
 - Understand what SignalR is and when to use it
-- Set up a SignalR Hub on the server (API)
+- Set up a SignalR Hub in the Blazor Server project
 - Connect your Blazor app to the SignalR hub
 - Send and receive real-time messages between clients
 - Coordinate multiplayer turns using client-server communication
@@ -24,13 +24,14 @@ Make sure you’ve reviewed:
 
 ## 🛠 Setup Checklist
 
-You’ll need the following NuGet packages installed before class:
+You’ll need the following NuGet package installed before class:
 
 ✅ In **TicTacToe.Web**:
 ```bash
-dotnet add package Microsoft.AspNetCore.SignalR
 dotnet add package Microsoft.AspNetCore.SignalR.Client
 ```
+
+> The SignalR **server** is already included in ASP.NET Core — no extra package needed for the hub side.
 
 ## 💬 Think About
 

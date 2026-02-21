@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using TicTacToe.Core.DataTransferObjects;
 
 namespace TicTacToe.Core;
 
@@ -92,27 +91,4 @@ public class GameEngine
         return (row, col);
     }
 
-    public GameStateDto ToDto(string gameId)
-    {
-        var winnerName =
-            _status == GameStatus.Win ? CurrentPlayer.Name : null;
-
-        return new GameStateDto
-        {
-            GameId = gameId,
-            BoardSize = Board.Size,
-            BoardFlat = Board.ToFlatString(),
-            Status = _status,
-            PlayerXName = Player1?.Symbol == 'X' ? Player1.Name : Player2?.Name ?? "",
-            PlayerOName = Player1?.Symbol == 'O' ? Player1.Name : Player2?.Name ?? "",
-            CurrentSymbol = CurrentPlayer.Symbol,
-            WinnerName = winnerName,
-            Moves = History.MoveHistory
-                .OrderBy(m => m.Timestamp)
-                .Select(m => new MoveDto { Position = m.Position, Symbol = m.Symbol, Timestamp = m.Timestamp })
-                .ToList()
-        };
-    }
-
-    public bool IsPlayersTurn(char symbol) => _status == GameStatus.InProgress && CurrentPlayer.Symbol == symbol;
 }

@@ -3,24 +3,46 @@ using TicTacToe.Core;
 
 namespace TicTacToe.Web;
 
-public sealed class GameRoomManager
+public record GameSummary(
+    string GameId,
+    string Player1Name,
+    int Player1Wins,
+    string Player2Name,
+    int Player2Wins,
+    string Status,
+    string CurrentPlayer
+);
+
+public class GameRoomManager
 {
-    private readonly ConcurrentDictionary<string, GameRoom> _rooms = new();
+    private readonly ConcurrentDictionary<string, GameEngine> _rooms = new();
+    private readonly ILoggerFactory _loggerFactory;
 
-    public GameRoom GetOrCreate(string gameId, Func<GameRoom> factory)
-        => _rooms.GetOrAdd(gameId, _ => factory());
-
-    public bool TryGet(string gameId, out GameRoom room) => _rooms.TryGetValue(gameId, out room!);
-
-    public sealed class GameRoom
+    public GameRoomManager(ILoggerFactory loggerFactory)
     {
-        public required string GameId { get; init; }
-        public required GameEngine Engine { get; init; }
-
-        // ConnectionId -> assigned symbol ('X'/'O') or null for spectator
-        public ConcurrentDictionary<string, char?> Connections { get; } = new();
-
-        // Prevent concurrent move races
-        public SemaphoreSlim Gate { get; } = new(1, 1);
+        _loggerFactory = loggerFactory;
     }
+
+    public GameEngine GetOrCreate(string gameId)
+        => _rooms.GetOrAdd(
+            gameId,
+            _ => new GameEngine(_loggerFactory.CreateLogger<GameEngine>(), new GameStatsService())
+        );
+
+    public IEnumerable<GameSummary> GetActiveSummaries()
+        => _rooms
+            .Where(kv => kv.Value.Board != null)
+            .Select(kv =>
+            {
+                var e = kv.Value;
+                return new GameSummary(
+                    kv.Key,
+                    e.Player1?.Name ?? "?",
+                    e.Player1?.Wins ?? 0,
+                    e.Player2?.Name ?? "?",
+                    e.Player2?.Wins ?? 0,
+                    e.Status.ToString(),
+                    e.CurrentPlayer?.Name ?? "?"
+                );
+            });
 }
