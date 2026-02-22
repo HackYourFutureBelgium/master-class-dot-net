@@ -277,11 +277,19 @@ Why it matters:
 Blazor uses the same DI container as ASP.NET Core:
 
 ```razor
-@inject HttpClient Http
 @inject TicTacToe.Core.GameEngine Engine
 ```
 
-Use DI for services like API clients, state containers, and shared logic.
+Use DI for services like state containers and shared logic.
+
+Register services in `Program.cs`:
+
+```csharp
+builder.Services.AddSingleton<GameStatsService>();
+builder.Services.AddSingleton<GameEngine>();
+```
+
+> `GameEngine` depends on `GameStatsService` via constructor injection, so both must be registered. Forgetting `GameStatsService` will cause a DI resolution error at startup.
 
 > **Note on lifetime:** In this solution, `GameEngine` is registered as `AddSingleton`, meaning all browser tabs share the same game instance. This is intentional for simplicity — it lets you focus on learning Blazor without worrying about per-user state. In lesson 8, SignalR will introduce a proper room-based model where each game is isolated.
 
@@ -466,13 +474,13 @@ Split the board into a reusable `GameBoard` and `Cell`:
 @using TicTacToe.Core
 
 <div class="d-grid gap-2">
-    @for (var i = 0; i < GameBoard.Size; i++)
+    @for (var i = 0; i < Board.Size; i++)
     {
         <div class="d-flex justify-content-center">
-            @for (var j = 0; j < GameBoard.Size; j++)
+            @for (var j = 0; j < Board.Size; j++)
             {
-                var pos = i * GameBoard.Size + j + 1;
-                var cell = GameBoard.GetCell(i, j);
+                var pos = i * Board.Size + j + 1;
+                var cell = Board.GetCell(i, j);
 
                 <Cell Value="@cell"
                       Index="@pos"
@@ -484,7 +492,7 @@ Split the board into a reusable `GameBoard` and `Cell`:
 </div>
 
 @code {
-    [Parameter] public TicTacToe.Core.Board GameBoard { get; set; } = default!;
+    [Parameter] public Board Board { get; set; }
     [Parameter] public bool IsInProgress { get; set; }
     [Parameter] public EventCallback<int> OnCellClicked { get; set; }
 }
@@ -510,7 +518,7 @@ Split the board into a reusable `GameBoard` and `Cell`:
 In `Game.razor`, the board section becomes:
 
 ```razor
-<GameBoard GameBoard="@Board"
+<GameBoard Board="@Board"
            IsInProgress="@(Engine.Status == GameStatus.InProgress)"
            OnCellClicked="MakeMove" />
 ```

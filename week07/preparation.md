@@ -2,25 +2,24 @@
 
 ## ✅ Goals for this lesson
 
-This week, you’ll:
+This week, you'll:
 
 - Understand what Blazor is and how it fits into the .NET ecosystem
 - Build interactive user interfaces using Blazor Server
 - Use data binding and event handling in components
-- Consume a Web API using `HttpClient` in Blazor
+- Consume game logic from `TicTacToe.Core` directly in a Blazor component
 - Prepare the foundation for a multiplayer Tic Tac Toe game
 
 ---
 
 ## 🧠 Before You Arrive
 
-Make sure you’re familiar with:
+Make sure you're familiar with:
 
-- The basics of HTTP and APIs (from the previous lessons)
 - The structure of the TicTacToe game logic in `TicTacToe.Core`
 - Razor syntax (similar to HTML with embedded C#)
 
-No prior knowledge of Blazor is required, but being comfortable with MVC and Web API concepts will help.
+No prior knowledge of Blazor is required, but being comfortable with MVC and Razor Views concepts will help.
 
 ---
 
@@ -34,16 +33,14 @@ Please ensure the following tools are available and working:
 In addition, prepare the following:
 
 - A solution that contains:
-  - `TicTacToe.Core` (shared logic)
-  - `TicTacToe.Api` (Web API)
-  - A new Blazor Server project: `TicTacToe.Blazor`
+  - `TicTacToe.Core` (shared game logic)
+  - A new Blazor Server project: `TicTacToe.Web`
 
 To create the Blazor project and link it up:
 
 ```bash
-dotnet new blazorserver -n TicTacToe.Blazor
-dotnet add TicTacToe.Blazor/TicTacToe.Blazor.csproj reference TicTacToe.Core/TicTacToe.Core.csproj
-dotnet add TicTacToe.Blazor/TicTacToe.Blazor.csproj reference TicTacToe.Api/TicTacToe.Api.csproj
+dotnet new blazor -n TicTacToe.Web
+dotnet add TicTacToe.Web/TicTacToe.Web.csproj reference TicTacToe.Core/TicTacToe.Core.csproj
 ```
 
 Open the solution in Rider and ensure the Blazor project runs successfully with a default template.

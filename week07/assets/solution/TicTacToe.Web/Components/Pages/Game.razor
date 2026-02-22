@@ -143,7 +143,7 @@
                         <button class="btn btn-success" @onclick="StartNewRound">
                             🔁 Play Another Round
                         </button>
-                        <button class="btn btn-outline-primary" @onclick="() => Engine.SetBoardSize(Board.Size)">
+                        <button class="btn btn-outline-primary" @onclick="ReplaySameSize">
                             🔄 Replay Same Size
                         </button>
                     </div>
@@ -203,6 +203,12 @@
             return;
 
         Engine.SetBoardSize(newRoundBoardSize);
+        Engine.History.ClearHistory();
+    }
+
+    private void ReplaySameSize()
+    {
+        Engine.SetBoardSize(Board.Size);
         Engine.History.ClearHistory();
     }
 }
