@@ -97,7 +97,7 @@ Example component:
 
 ```razor
 <input @bind="playerName" />
-<p>Hello, @playerName!</p>
+<p>Hello, @playerName</p>
 
 @code {
     private string playerName;
@@ -195,7 +195,7 @@ Example (timer-driven updates):
 
 @code {
     private int seconds;
-    private System.Timers.Timer? timer;
+    private System.Timers.Timer timer;
 
     protected override void OnInitialized()
     {

@@ -232,7 +232,7 @@ A Blazor component receives a URL segment as a route parameter:
 @page "/game/{GameId}"
 
 @code {
-    [Parameter] public string? GameId { get; set; }
+    [Parameter] public string GameId { get; set; }
 }
 ```
 
@@ -273,8 +273,8 @@ The component handles **two routes** — the lobby (no game ID) and the game roo
 @code {
     [Parameter] public string? GameId { get; set; }
 
-    private HubConnection? _connection;
-    private string? _connectedGameId;
+    private HubConnection _connection;
+    private string _connectedGameId;
 
     private GameEngine? Engine => string.IsNullOrEmpty(GameId) ? null : RoomManager.GetOrCreate(GameId);
 
@@ -551,7 +551,7 @@ connection.Closed += async error =>
 Server side (override in hub):
 
 ```csharp
-public override Task OnDisconnectedAsync(Exception? exception)
+public override Task OnDisconnectedAsync(Exception exception)
 {
     // Cleanup player state
     return base.OnDisconnectedAsync(exception);
@@ -640,7 +640,7 @@ public record GameSummary(
 ```csharp
 public IEnumerable<GameSummary> GetActiveSummaries()
     => _rooms
-        .Where(kv => kv.Value.Board != null)
+        .Where(kv => kv.Value.Board is not null)
         .Select(kv =>
         {
             var e = kv.Value;
@@ -663,7 +663,7 @@ Every game action now sends two broadcasts — one to the game room, one to the 
 ```csharp
 private async Task BroadcastUpdate()
 {
-    await HubContext.Clients.Group(GameId!).SendAsync("StateUpdated");
+    await HubContext.Clients.Group(GameId).SendAsync("StateUpdated");
     await HubContext.Clients.Group("lobby").SendAsync("LobbyUpdated", RoomManager.GetActiveSummaries());
 }
 ```
