@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="utf-8"?>
+<coverage line-rate="1" branch-rate="0.9545" version="1.9" timestamp="1771842800" lines-covered="138" lines-valid="138" branches-covered="42" branches-valid="44">
+  <sources>
+    <source>/Users/seb/Developer/HackYourFutureBelgium/master-class-dot-net/week09/assets/solution/TicTacToe.Core/</source>
+  </sources>
+  <packages>
+    <package name="TicTacToe.Core" line-rate="1" branch-rate="0.9545" complexity="72">
+      <classes>
+        <class name="TicTacToe.Core.Board" filename="Board.cs" line-rate="1" branch-rate="0.9285" complexity="34">
+          <methods>
+            <method name="get_Size" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="18" hits="5" branch="False" />
+              </lines>
+            </method>
+            <method name="GetCell" signature="(System.Int32,System.Int32)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="20" hits="12" branch="False" />
+              </lines>
+            </method>
+            <method name="IsMoveValid" signature="(System.Int32)" line-rate="1" branch-rate="0.5" complexity="4">
+              <lines>
+                <line number="23" hits="31" branch="False" />
+                <line number="24" hits="31" branch="False" />
+                <line number="25" hits="31" branch="True" condition-coverage="50% (2/4)">
+                  <conditions>
+                    <condition number="28" type="jump" coverage="50%" />
+                    <condition number="37" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="26" hits="31" branch="False" />
+              </lines>
+            </method>
+            <method name="PlaceMove" signature="(System.Int32,System.Char)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="29" hits="65" branch="False" />
+                <line number="30" hits="65" branch="False" />
+                <line number="31" hits="65" branch="False" />
+                <line number="32" hits="65" branch="False" />
+              </lines>
+            </method>
+            <method name="CheckWin" signature="(System.Char)" line-rate="1" branch-rate="1" complexity="16">
+              <lines>
+                <line number="35" hits="37" branch="False" />
+                <line number="38" hits="254" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="225" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="39" hits="99" branch="False" />
+                <line number="40" hits="378" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="186" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="41" hits="99" branch="False" />
+                <line number="42" hits="250" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="96" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="43" hits="225" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="134" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="44" hits="90" branch="False" />
+                <line number="45" hits="90" branch="False" />
+                <line number="46" hits="108" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="453" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="47" hits="28" branch="False" />
+                <line number="48" hits="108" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="406" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="49" hits="28" branch="False" />
+                <line number="50" hits="77" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="315" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="51" hits="64" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="354" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="52" hits="26" branch="False" />
+                <line number="53" hits="26" branch="False" />
+                <line number="55" hits="26" branch="False" />
+                <line number="56" hits="37" branch="False" />
+              </lines>
+            </method>
+            <method name="IsDraw" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="58" hits="125" branch="False" />
+              </lines>
+            </method>
+            <method name="GetCoordinates" signature="(System.Int32)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="61" hits="96" branch="False" />
+                <line number="62" hits="96" branch="False" />
+                <line number="63" hits="96" branch="False" />
+                <line number="64" hits="96" branch="False" />
+                <line number="65" hits="96" branch="False" />
+              </lines>
+            </method>
+            <method name="ClearCell" signature="(System.Int32,System.Int32)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="68" hits="3" branch="False" />
+                <line number="69" hits="3" branch="False" />
+                <line number="70" hits="3" branch="False" />
+              </lines>
+            </method>
+            <method name="ToFlatString" signature="()" line-rate="1" branch-rate="1" complexity="4">
+              <lines>
+                <line number="73" hits="2" branch="False" />
+                <line number="74" hits="2" branch="False" />
+                <line number="75" hits="2" branch="False" />
+                <line number="77" hits="16" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="86" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="78" hits="48" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="67" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="79" hits="18" branch="False" />
+                <line number="81" hits="2" branch="False" />
+                <line number="82" hits="2" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.Int32)" line-rate="1" branch-rate="1" complexity="4">
+              <lines>
+                <line number="8" hits="29" branch="False" />
+                <line number="9" hits="29" branch="False" />
+                <line number="10" hits="29" branch="False" />
+                <line number="11" hits="29" branch="False" />
+                <line number="13" hits="232" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="73" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="14" hits="696" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="61" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="15" hits="261" branch="False" />
+                <line number="16" hits="29" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="18" hits="5" branch="False" />
+            <line number="20" hits="12" branch="False" />
+            <line number="23" hits="31" branch="False" />
+            <line number="24" hits="31" branch="False" />
+            <line number="25" hits="31" branch="True" condition-coverage="50% (2/4)">
+              <conditions>
+                <condition number="28" type="jump" coverage="50%" />
+                <condition number="37" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="26" hits="31" branch="False" />
+            <line number="29" hits="65" branch="False" />
+            <line number="30" hits="65" branch="False" />
+            <line number="31" hits="65" branch="False" />
+            <line number="32" hits="65" branch="False" />
+            <line number="35" hits="37" branch="False" />
+            <line number="38" hits="254" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="225" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="39" hits="99" branch="False" />
+            <line number="40" hits="378" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="186" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="41" hits="99" branch="False" />
+            <line number="42" hits="250" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="96" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="43" hits="225" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="134" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="44" hits="90" branch="False" />
+            <line number="45" hits="90" branch="False" />
+            <line number="46" hits="108" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="453" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="47" hits="28" branch="False" />
+            <line number="48" hits="108" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="406" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="49" hits="28" branch="False" />
+            <line number="50" hits="77" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="315" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="51" hits="64" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="354" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="52" hits="26" branch="False" />
+            <line number="53" hits="26" branch="False" />
+            <line number="55" hits="26" branch="False" />
+            <line number="56" hits="37" branch="False" />
+            <line number="58" hits="125" branch="False" />
+            <line number="61" hits="96" branch="False" />
+            <line number="62" hits="96" branch="False" />
+            <line number="63" hits="96" branch="False" />
+            <line number="64" hits="96" branch="False" />
+            <line number="65" hits="96" branch="False" />
+            <line number="68" hits="3" branch="False" />
+            <line number="69" hits="3" branch="False" />
+            <line number="70" hits="3" branch="False" />
+            <line number="73" hits="2" branch="False" />
+            <line number="74" hits="2" branch="False" />
+            <line number="75" hits="2" branch="False" />
+            <line number="77" hits="16" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="86" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="78" hits="48" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="67" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="79" hits="18" branch="False" />
+            <line number="81" hits="2" branch="False" />
+            <line number="82" hits="2" branch="False" />
+            <line number="8" hits="29" branch="False" />
+            <line number="9" hits="29" branch="False" />
+            <line number="10" hits="29" branch="False" />
+            <line number="11" hits="29" branch="False" />
+            <line number="13" hits="232" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="73" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="14" hits="696" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="61" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="15" hits="261" branch="False" />
+            <line number="16" hits="29" branch="False" />
+          </lines>
+        </class>
+        <class name="TicTacToe.Core.GameEngine" filename="GameEngine.cs" line-rate="1" branch-rate="1" complexity="26">
+          <methods>
+            <method name="get_Board" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="11" hits="159" branch="False" />
+              </lines>
+            </method>
+            <method name="get_Player1" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="12" hits="58" branch="False" />
+              </lines>
+            </method>
+            <method name="get_Player2" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="13" hits="25" branch="False" />
+              </lines>
+            </method>
+            <method name="get_CurrentPlayer" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="14" hits="3" branch="False" />
+              </lines>
+            </method>
+            <method name="get_Status" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="15" hits="4" branch="False" />
+              </lines>
+            </method>
+            <method name="get_History" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="16" hits="38" branch="False" />
+              </lines>
+            </method>
+            <method name="SetPlayers" signature="(TicTacToe.Core.Player,TicTacToe.Core.Player)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="25" hits="10" branch="False" />
+                <line number="26" hits="10" branch="False" />
+                <line number="27" hits="10" branch="False" />
+                <line number="28" hits="10" branch="False" />
+                <line number="29" hits="10" branch="False" />
+              </lines>
+            </method>
+            <method name="SetBoardSize" signature="(System.Int32)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="32" hits="10" branch="False" />
+                <line number="33" hits="10" branch="False" />
+                <line number="34" hits="10" branch="False" />
+                <line number="35" hits="10" branch="False" />
+              </lines>
+            </method>
+            <method name="TryPlayMove" signature="(System.Int32)" line-rate="1" branch-rate="1" complexity="10">
+              <lines>
+                <line number="38" hits="30" branch="False" />
+                <line number="39" hits="30" branch="True" condition-coverage="100% (4/4)">
+                  <conditions>
+                    <condition number="7" type="jump" coverage="100%" />
+                    <condition number="23" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="40" hits="1" branch="False" />
+                <line number="42" hits="29" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="49" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="43" hits="1" branch="False" />
+                <line number="44" hits="1" branch="False" />
+                <line number="45" hits="1" branch="False" />
+                <line number="48" hits="28" branch="False" />
+                <line number="49" hits="28" branch="False" />
+                <line number="51" hits="28" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="208" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="52" hits="3" branch="False" />
+                <line number="53" hits="3" branch="False" />
+                <line number="54" hits="3" branch="False" />
+                <line number="55" hits="3" branch="False" />
+                <line number="56" hits="25" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="248" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="57" hits="1" branch="False" />
+                <line number="58" hits="1" branch="False" />
+                <line number="59" hits="1" branch="False" />
+                <line number="61" hits="24" branch="False" />
+                <line number="62" hits="24" branch="False" />
+                <line number="63" hits="24" branch="False" />
+                <line number="65" hits="28" branch="False" />
+                <line number="66" hits="30" branch="False" />
+              </lines>
+            </method>
+            <method name="SwitchPlayer" signature="()" line-rate="1" branch-rate="1" complexity="2">
+              <lines>
+                <line number="69" hits="26" branch="False" />
+                <line number="70" hits="26" branch="True" condition-coverage="100% (2/2)">
+                  <conditions>
+                    <condition number="14" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="71" hits="26" branch="False" />
+              </lines>
+            </method>
+            <method name="TryUndoLastMove" signature="()" line-rate="1" branch-rate="1" complexity="4">
+              <lines>
+                <line number="74" hits="3" branch="False" />
+                <line number="75" hits="3" branch="True" condition-coverage="100% (4/4)">
+                  <conditions>
+                    <condition number="17" type="jump" coverage="100%" />
+                    <condition number="33" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="76" hits="1" branch="False" />
+                <line number="78" hits="2" branch="False" />
+                <line number="79" hits="2" branch="False" />
+                <line number="80" hits="2" branch="False" />
+                <line number="81" hits="2" branch="False" />
+                <line number="82" hits="2" branch="False" />
+                <line number="83" hits="2" branch="False" />
+                <line number="84" hits="2" branch="False" />
+                <line number="85" hits="3" branch="False" />
+              </lines>
+            </method>
+            <method name="GetCoordinates" signature="(System.Int32)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="88" hits="2" branch="False" />
+                <line number="89" hits="2" branch="False" />
+                <line number="90" hits="2" branch="False" />
+                <line number="91" hits="2" branch="False" />
+                <line number="92" hits="2" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(Microsoft.Extensions.Logging.ILogger`1&lt;TicTacToe.Core.GameEngine&gt;,TicTacToe.Core.GameStatsService)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="18" hits="11" branch="False" />
+                <line number="19" hits="11" branch="False" />
+                <line number="20" hits="11" branch="False" />
+                <line number="21" hits="11" branch="False" />
+                <line number="22" hits="11" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="11" hits="159" branch="False" />
+            <line number="12" hits="58" branch="False" />
+            <line number="13" hits="25" branch="False" />
+            <line number="14" hits="3" branch="False" />
+            <line number="15" hits="4" branch="False" />
+            <line number="16" hits="38" branch="False" />
+            <line number="25" hits="10" branch="False" />
+            <line number="26" hits="10" branch="False" />
+            <line number="27" hits="10" branch="False" />
+            <line number="28" hits="10" branch="False" />
+            <line number="29" hits="10" branch="False" />
+            <line number="32" hits="10" branch="False" />
+            <line number="33" hits="10" branch="False" />
+            <line number="34" hits="10" branch="False" />
+            <line number="35" hits="10" branch="False" />
+            <line number="38" hits="30" branch="False" />
+            <line number="39" hits="30" branch="True" condition-coverage="100% (4/4)">
+              <conditions>
+                <condition number="7" type="jump" coverage="100%" />
+                <condition number="23" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="40" hits="1" branch="False" />
+            <line number="42" hits="29" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="49" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="43" hits="1" branch="False" />
+            <line number="44" hits="1" branch="False" />
+            <line number="45" hits="1" branch="False" />
+            <line number="48" hits="28" branch="False" />
+            <line number="49" hits="28" branch="False" />
+            <line number="51" hits="28" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="208" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="52" hits="3" branch="False" />
+            <line number="53" hits="3" branch="False" />
+            <line number="54" hits="3" branch="False" />
+            <line number="55" hits="3" branch="False" />
+            <line number="56" hits="25" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="248" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="57" hits="1" branch="False" />
+            <line number="58" hits="1" branch="False" />
+            <line number="59" hits="1" branch="False" />
+            <line number="61" hits="24" branch="False" />
+            <line number="62" hits="24" branch="False" />
+            <line number="63" hits="24" branch="False" />
+            <line number="65" hits="28" branch="False" />
+            <line number="66" hits="30" branch="False" />
+            <line number="69" hits="26" branch="False" />
+            <line number="70" hits="26" branch="True" condition-coverage="100% (2/2)">
+              <conditions>
+                <condition number="14" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="71" hits="26" branch="False" />
+            <line number="74" hits="3" branch="False" />
+            <line number="75" hits="3" branch="True" condition-coverage="100% (4/4)">
+              <conditions>
+                <condition number="17" type="jump" coverage="100%" />
+                <condition number="33" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="76" hits="1" branch="False" />
+            <line number="78" hits="2" branch="False" />
+            <line number="79" hits="2" branch="False" />
+            <line number="80" hits="2" branch="False" />
+            <line number="81" hits="2" branch="False" />
+            <line number="82" hits="2" branch="False" />
+            <line number="83" hits="2" branch="False" />
+            <line number="84" hits="2" branch="False" />
+            <line number="85" hits="3" branch="False" />
+            <line number="88" hits="2" branch="False" />
+            <line number="89" hits="2" branch="False" />
+            <line number="90" hits="2" branch="False" />
+            <line number="91" hits="2" branch="False" />
+            <line number="92" hits="2" branch="False" />
+            <line number="18" hits="11" branch="False" />
+            <line number="19" hits="11" branch="False" />
+            <line number="20" hits="11" branch="False" />
+            <line number="21" hits="11" branch="False" />
+            <line number="22" hits="11" branch="False" />
+          </lines>
+        </class>
+        <class name="TicTacToe.Core.GameStatsService" filename="GameStatsService.cs" line-rate="1" branch-rate="1" complexity="4">
+          <methods>
+            <method name="get_MoveHistory" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="5" hits="57" branch="False" />
+              </lines>
+            </method>
+            <method name="get_GlobalMoveHistory" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="6" hits="46" branch="False" />
+              </lines>
+            </method>
+            <method name="AddMove" signature="(TicTacToe.Core.Move)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="9" hits="31" branch="False" />
+                <line number="10" hits="31" branch="False" />
+                <line number="11" hits="31" branch="False" />
+                <line number="12" hits="31" branch="False" />
+              </lines>
+            </method>
+            <method name="ClearHistory" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="15" hits="1" branch="False" />
+                <line number="16" hits="1" branch="False" />
+                <line number="17" hits="1" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="5" hits="57" branch="False" />
+            <line number="6" hits="46" branch="False" />
+            <line number="9" hits="31" branch="False" />
+            <line number="10" hits="31" branch="False" />
+            <line number="11" hits="31" branch="False" />
+            <line number="12" hits="31" branch="False" />
+            <line number="15" hits="1" branch="False" />
+            <line number="16" hits="1" branch="False" />
+            <line number="17" hits="1" branch="False" />
+          </lines>
+        </class>
+        <class name="TicTacToe.Core.Move" filename="Move.cs" line-rate="1" branch-rate="1" complexity="3">
+          <methods>
+            <method name="get_Position" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="5" hits="33" branch="False" />
+              </lines>
+            </method>
+            <method name="get_Symbol" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="6" hits="31" branch="False" />
+              </lines>
+            </method>
+            <method name="get_Timestamp" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="7" hits="31" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="5" hits="33" branch="False" />
+            <line number="6" hits="31" branch="False" />
+            <line number="7" hits="31" branch="False" />
+          </lines>
+        </class>
+        <class name="TicTacToe.Core.Player" filename="Player.cs" line-rate="1" branch-rate="1" complexity="5">
+          <methods>
+            <method name="get_Name" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="5" hits="4" branch="False" />
+              </lines>
+            </method>
+            <method name="get_Symbol" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="6" hits="84" branch="False" />
+              </lines>
+            </method>
+            <method name="get_Wins" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="7" hits="27" branch="False" />
+              </lines>
+            </method>
+            <method name="AddWin" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="16" hits="3" branch="False" />
+              </lines>
+            </method>
+            <method name=".ctor" signature="(System.String,System.Char)" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="9" hits="20" branch="False" />
+                <line number="10" hits="20" branch="False" />
+                <line number="11" hits="20" branch="False" />
+                <line number="12" hits="20" branch="False" />
+                <line number="13" hits="20" branch="False" />
+                <line number="14" hits="20" branch="False" />
+              </lines>
+            </method>
+          </methods>
+          <lines>
+            <line number="5" hits="4" branch="False" />
+            <line number="6" hits="84" branch="False" />
+            <line number="7" hits="27" branch="False" />
+            <line number="16" hits="3" branch="False" />
+            <line number="9" hits="20" branch="False" />
+            <line number="10" hits="20" branch="False" />
+            <line number="11" hits="20" branch="False" />
+            <line number="12" hits="20" branch="False" />
+            <line number="13" hits="20" branch="False" />
+            <line number="14" hits="20" branch="False" />
+          </lines>
+        </class>
+      </classes>
+    </package>
+  </packages>
+</coverage>

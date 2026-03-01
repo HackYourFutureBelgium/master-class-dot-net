@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Dashboard</title>
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body class="container mt-5">
+
+    <h1>🎮 Live Game Dashboard</h1>
+    <p class="text-muted">Updates in real time via SignalR — no Blazor, plain JavaScript.</p>
+
+    <div id="status" class="alert alert-info">Connecting...</div>
+
+    <table class="table table-bordered mt-3" id="games-table" style="display:none">
+        <thead class="table-dark">
+            <tr>
+                <th>Game ID</th>
+                <th>Player 1 (X)</th>
+                <th>Player 2 (O)</th>
+                <th>Status</th>
+                <th>Current Turn</th>
+            </tr>
+        </thead>
+        <tbody id="games-body"></tbody>
+    </table>
+
+    <p id="no-games" class="text-muted" style="display:none">No active games right now.</p>
+
+    <!-- SignalR JavaScript client -->
+    <script src="https://unpkg.com/@microsoft/signalr@latest/dist/browser/signalr.min.js"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/gamehub")
+            .build();
+
+        // Subscribe before starting — same rule as in C#
+        connection.on("LobbyUpdated", renderGames);
+
+        connection.start()
+            .then(() => {
+                document.getElementById("status").className = "alert alert-success";
+                document.getElementById("status").textContent = "Connected — watching live updates.";
+                // Join the lobby group and receive the current snapshot immediately
+                return connection.invoke("JoinLobby");
+            })
+            .catch(err => {
+                document.getElementById("status").className = "alert alert-danger";
+                document.getElementById("status").textContent = "Connection failed: " + err;
+            });
+
+        function renderGames(games) {
+            const tbody   = document.getElementById("games-body");
+            const table   = document.getElementById("games-table");
+            const noGames = document.getElementById("no-games");
+
+            tbody.innerHTML = "";
+
+            if (games.length === 0) {
+                table.style.display   = "none";
+                noGames.style.display = "";
+                return;
+            }
+
+            table.style.display   = "";
+            noGames.style.display = "none";
+
+            for (const game of games) {
+                // Note: property names are camelCase (gameId, not GameId)
+                const row = document.createElement("tr");
+                row.innerHTML =
+                    `<td><strong>${game.gameId}</strong></td>` +
+                    `<td>${game.player1Name} — ${game.player1Wins} win(s)</td>` +
+                    `<td>${game.player2Name} — ${game.player2Wins} win(s)</td>` +
+                    `<td>${formatStatus(game.status)}</td>` +
+                    `<td>${game.status === "InProgress" ? game.currentPlayer : "—"}</td>`;
+                tbody.appendChild(row);
+            }
+        }
+
+        function formatStatus(status) {
+            if (status === "InProgress") return '<span class="badge bg-success">In Progress</span>';
+            if (status === "Win")        return '<span class="badge bg-primary">Win</span>';
+            if (status === "Draw")       return '<span class="badge bg-secondary">Draw</span>';
+            return status;
+        }
+    </script>
+
+</body>
+</html>

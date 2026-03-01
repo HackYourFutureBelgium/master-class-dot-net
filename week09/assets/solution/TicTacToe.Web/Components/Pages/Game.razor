@@ -1,0 +1,250 @@
+@page "/game"
+@page "/game/{GameId}"
+
+@using TicTacToe.Core
+@using Microsoft.AspNetCore.SignalR
+@using Microsoft.AspNetCore.SignalR.Client
+
+@inject GameRoomManager RoomManager
+@inject IHubContext<GameHub> HubContext
+@inject NavigationManager Nav
+
+@implements IAsyncDisposable
+
+<div class="container mt-5">
+
+    @if (string.IsNullOrEmpty(GameId))
+    {
+        <h2 class="text-center">Tic-Tac-Toe</h2>
+
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-4">
+                <h4>Create or Join a Game</h4>
+                <div class="mb-3">
+                    <label class="form-label">Game ID</label>
+                    <input class="form-control" @bind="gameIdInput" placeholder="e.g. room42" />
+                </div>
+                <button class="btn btn-primary"
+                        disabled="@string.IsNullOrWhiteSpace(gameIdInput)"
+                        @onclick="@(() => Nav.NavigateTo($"/game/{gameIdInput.Trim()}"))">
+                    Join Game
+                </button>
+            </div>
+        </div>
+    }
+    else if (!IsGameStarted)
+    {
+        <div class="row justify-content-center mt-4">
+            <div class="col-md-6">
+
+                <h4>Start a New Game</h4>
+
+                <div class="mb-3">
+                    <label class="form-label">Player 1 Name</label>
+                    <input class="form-control" @bind="player1Name" placeholder="Player 1" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Player 2 Name</label>
+                    <input class="form-control" @bind="player2Name" placeholder="Player 2" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Board Size (3–9)</label>
+                    <input type="number" class="form-control" @bind="boardSize" min="3" max="9" />
+                </div>
+
+                <button class="btn btn-primary" @onclick="StartGame">
+                    Start Game
+                </button>
+            </div>
+        </div>
+    }
+    else if (Board is not null)
+    {
+        <div class="row mt-4">
+            <div class="col text-center">
+                <h4>
+                    Current Player:
+                    <span class="badge bg-primary">
+                        @Engine.CurrentPlayer.Name (@Engine.CurrentPlayer.Symbol)
+                    </span>
+                </h4>
+            </div>
+        </div>
+
+        @if (Engine.Status == GameStatus.Win)
+        {
+            <div class="alert alert-success text-center mt-3">
+                🎉 Player <strong>@Engine.CurrentPlayer.Name</strong> wins!
+            </div>
+        }
+        else if (Engine.Status == GameStatus.Draw)
+        {
+            <div class="alert alert-warning text-center mt-3">
+                🤝 It's a draw!
+            </div>
+        }
+
+        <div class="row justify-content-center mt-4">
+            <div class="col-auto">
+                <GameBoard Board="@Board"
+                           IsInProgress="@(Engine.Status == GameStatus.InProgress)"
+                           OnCellClicked="MakeMove" />
+            </div>
+        </div>
+
+        <div class="row justify-content-center mt-3">
+            <div class="col-auto">
+                <button class="btn btn-secondary"
+                        disabled="@(Engine.Status != GameStatus.InProgress)"
+                        @onclick="Undo">
+                    Undo Last Move
+                </button>
+            </div>
+        </div>
+
+        @if (Engine.Status != GameStatus.InProgress)
+        {
+            <div class="row justify-content-center mt-4">
+                <div class="col-auto text-center">
+                    <h4>🏆 Scoreboard</h4>
+                    <p>@Engine.Player1.Name: @Engine.Player1.Wins win(s)</p>
+                    <p>@Engine.Player2.Name: @Engine.Player2.Wins win(s)</p>
+                </div>
+            </div>
+
+            <div class="row justify-content-center mt-4">
+                <div class="col-auto">
+                    <h4>📜 Move History</h4>
+                    <ol>
+                        @foreach (var move in Engine.History.MoveHistory.OrderBy(m => m.Timestamp))
+                        {
+                            <li>Player @move.Symbol → Position @move.Position (@move.Timestamp.ToShortTimeString())</li>
+                        }
+                    </ol>
+                </div>
+            </div>
+
+            <div class="row justify-content-center mt-4">
+                <div class="col-auto text-center">
+                    <h5>🎮 Game Over — what would you like to do?</h5>
+
+                    <div class="mt-3">
+                        <label class="form-label">Board Size for Next Round (3–9)</label>
+                        <input type="number" class="form-control"
+                               style="max-width: 160px; margin: 0 auto;"
+                               @bind="newRoundBoardSize" min="3" max="9" />
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-2 mt-3">
+                        <button class="btn btn-success" @onclick="StartNewRound">
+                            🔁 Play Another Round
+                        </button>
+                        <button class="btn btn-outline-primary" @onclick="ReplaySameSize">
+                            🔄 Replay Same Size
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+</div>
+
+@code {
+    [Parameter] public string GameId { get; set; }
+
+    private HubConnection _connection;
+    private string gameIdInput = "";
+
+    private string player1Name = "";
+    private string player2Name = "";
+    private int boardSize = 3;
+    private int newRoundBoardSize = 3;
+
+    private string _connectedGameId;
+
+    private GameEngine Engine => string.IsNullOrEmpty(GameId) ? null : RoomManager.GetOrCreate(GameId);
+    private bool IsGameStarted => Engine?.Board != null;
+    private Board Board => Engine?.Board;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // Guard: only connect when GameId is present and has not been connected yet.
+        // OnParametersSetAsync is called every time parameters change, including when
+        // Blazor reuses this component instance navigating from /game to /game/{id}.
+        if (string.IsNullOrEmpty(GameId) || GameId == _connectedGameId) return;
+
+        _connectedGameId = GameId;
+
+        if (_connection is not null)
+            await _connection.DisposeAsync();
+
+        _connection = new HubConnectionBuilder()
+            .WithUrl(Nav.ToAbsoluteUri("/gamehub"))
+            .Build();
+
+        // Re-render whenever another client broadcasts a state change
+        _connection.On("StateUpdated", () => InvokeAsync(StateHasChanged));
+
+        await _connection.StartAsync();
+
+        // Join this game's SignalR group
+        await _connection.SendAsync("JoinGame", GameId);
+    }
+
+    // Notifies players in this game room AND the lobby dashboard
+    private async Task BroadcastUpdate()
+    {
+        await HubContext.Clients.Group(GameId!).SendAsync("StateUpdated");
+        await HubContext.Clients.Group("lobby").SendAsync("LobbyUpdated", RoomManager.GetActiveSummaries());
+    }
+
+    private async Task StartGame()
+    {
+        if (string.IsNullOrWhiteSpace(player1Name) || string.IsNullOrWhiteSpace(player2Name))
+            return;
+
+        Engine.SetPlayers(new Player(player1Name, 'X'), new Player(player2Name, 'O'));
+        Engine.SetBoardSize(boardSize);
+
+        await BroadcastUpdate();
+    }
+
+    private async Task MakeMove(int position)
+    {
+        if (Engine.Status != GameStatus.InProgress) return;
+
+        Engine.TryPlayMove(position);
+        await BroadcastUpdate();
+    }
+
+    private async Task Undo()
+    {
+        Engine.TryUndoLastMove();
+        await BroadcastUpdate();
+    }
+
+    private async Task StartNewRound()
+    {
+        if (newRoundBoardSize < 3 || newRoundBoardSize > 9) return;
+
+        Engine.SetBoardSize(newRoundBoardSize);
+        Engine.History.ClearHistory();
+        await BroadcastUpdate();
+    }
+
+    private async Task ReplaySameSize()
+    {
+        Engine.SetBoardSize(Board!.Size);
+        Engine.History.ClearHistory();
+        await BroadcastUpdate();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_connection is not null)
+            await _connection.DisposeAsync();
+    }
+}
