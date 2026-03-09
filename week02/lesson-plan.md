@@ -3,6 +3,7 @@
 ## 📌 Lesson Overview
 - Object-oriented programming in C#
 - Encapsulation using access modifiers and properties
+- **Interfaces** — defining contracts between classes
 - Structuring the game with `Board`, `Player`, and `GameEngine` classes
 - Game state management using enums
 - Defensive programming and input validation
@@ -20,7 +21,108 @@ Object-Oriented Programming (OOP) helps break down complex systems into smaller,
 
 ---
 
-## 2️⃣ The `Board` Class
+## 2️⃣ Interfaces
+
+### What Is an Interface?
+
+A class defines *what something is* and *how it works*. An interface defines only *what something can do* — a contract with no implementation.
+
+Any class that signs that contract by implementing the interface must provide all the methods and properties it declares. The caller only needs to know about the contract, not which specific class is behind it.
+
+```csharp
+interface IGameRenderer
+{
+    void RenderBoard(char[,] cells);
+    void RenderMessage(string message);
+}
+```
+
+`IGameRenderer` says: "whatever you are, you must be able to render a board and a message." It says nothing about *how*.
+
+### Implementing an Interface
+
+A class opts in by listing the interface after a colon, then providing every member:
+
+```csharp
+class ConsoleRenderer : IGameRenderer
+{
+    public void RenderBoard(char[,] cells)
+    {
+        for (var i = 0; i < 3; i++)
+        {
+            for (var j = 0; j < 3; j++)
+                Console.Write($" {cells[i, j]} ");
+            Console.WriteLine();
+        }
+    }
+
+    public void RenderMessage(string message)
+    {
+        Console.WriteLine(message);
+    }
+}
+```
+
+A second class can implement the same interface with completely different behaviour:
+
+```csharp
+class FileRenderer : IGameRenderer
+{
+    private readonly string _path;
+
+    public FileRenderer(string path) => _path = path;
+
+    public void RenderBoard(char[,] cells)    => File.AppendAllText(_path, BoardToString(cells));
+    public void RenderMessage(string message) => File.AppendAllText(_path, message + "\n");
+
+    private static string BoardToString(char[,] cells) { /* ... */ return ""; }
+}
+```
+
+### Using an Interface as a Type
+
+The key benefit: `GameEngine` can be written against `IGameRenderer` and work with *any* implementation — console, file, web, test fake — without changing a single line of game logic:
+
+```csharp
+class GameEngine
+{
+    private readonly IGameRenderer _renderer;
+
+    public GameEngine(IGameRenderer renderer)
+    {
+        _renderer = renderer;
+    }
+
+    public void Start()
+    {
+        _renderer.RenderBoard(/* ... */);
+        _renderer.RenderMessage("Your turn!");
+    }
+}
+
+// Wire up the concrete choice once, in Main:
+var game = new GameEngine(new ConsoleRenderer());
+game.Start();
+```
+
+Swap `new ConsoleRenderer()` for `new FileRenderer("log.txt")` and the game logic stays untouched.
+
+### Naming Convention
+
+Interfaces are always prefixed with `I` by convention: `IGameRenderer`, `ILogger`, `IEnumerable`. When you see an `I`-prefixed type, you know it is a contract, not a concrete class.
+
+### When to Reach for an Interface
+
+Use an interface when:
+- Multiple classes share a common set of behaviours but have different implementations
+- You want to swap one implementation for another (e.g., real DB vs. in-memory in tests)
+- You want to hide implementation details behind a clean API
+
+> **Looking ahead:** From Lesson 3 onwards you will use `ILogger<T>` — a .NET interface for logging. You will never instantiate a logger directly; you receive one through the interface. In Lesson 9 you will mock `IGameStatsService` in tests, which only works because it is an interface. The pattern starts here.
+
+---
+
+## 3️⃣ The `Board` Class
 
 The `Board` class handles board state, move placement, and display logic.
 
@@ -112,7 +214,7 @@ class Board
 
 ---
 
-## 3️⃣ The `Player` Class
+## 4️⃣ The `Player` Class
 
 A player is represented by a name and a symbol. This class also prepares for score tracking later.
 
@@ -132,7 +234,7 @@ class Player
 
 ---
 
-## 4️⃣ Game Status Enumeration
+## 5️⃣ Game Status Enumeration
 
 Game states are expressed as an enum to clearly define and manage the status of the game.
 
@@ -147,7 +249,7 @@ enum GameStatus
 
 ---
 
-## 5️⃣ The `GameEngine` Class
+## 6️⃣ The `GameEngine` Class
 
 The `GameEngine` class handles turn switching, user input, and delegates board-related tasks.
 
@@ -213,7 +315,7 @@ class GameEngine
 
 ---
 
-## 6️⃣ Playing the Game
+## 7️⃣ Playing the Game
 
 This is the `Main` method, which initializes players and launches the controller.
 
@@ -238,7 +340,7 @@ class Program
 
 ---
 
-## 7️⃣ Defensive Programming & Input Validation
+## 8️⃣ Defensive Programming & Input Validation
 
 Defensive programming helps protect your application from unexpected input or states. We handle this using input validation and by checking for invalid moves.
 
