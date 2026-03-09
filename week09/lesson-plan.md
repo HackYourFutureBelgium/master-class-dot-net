@@ -10,6 +10,7 @@ You will learn:
 - How xUnit works: `[Fact]`, `[Theory]`, and constructor setup
 - How to write meaningful tests for `Board` and `GameEngine`
 - How to handle constructor dependencies using `NullLogger<T>`
+- How to mock dependencies with **Moq** and verify interactions
 - How to test all eight winning combinations with a single `[Theory]`
 
 ---
@@ -24,11 +25,12 @@ You will learn:
 6. Testing `Board` logic in depth
 7. Handling dependencies: `NullLogger<T>` for `GameEngine`
 8. Testing `GameEngine` logic
-9. Parameterized tests: `[Theory]` for all eight winning combinations
-10. Common assertions reference
-11. `Assert.Throws` and when our game uses it
-12. Naming tests well
-13. What to test and what not to
+9. Mocking dependencies with Moq
+10. Parameterized tests: `[Theory]` for all eight winning combinations
+11. Common assertions reference
+12. `Assert.Throws` and when our game uses it
+13. Naming tests well
+14. What to test and what not to
 
 ---
 
@@ -452,7 +454,140 @@ public class GameEngineTests
 
 ---
 
-## 1️⃣1️⃣ Parameterized Tests with `[Theory]`
+## 1️⃣1️⃣ Mocking with Moq
+
+### Why Mocking?
+
+`NullLogger<T>` works well for loggers because we do not care whether logging happened — we only need the dependency to exist without crashing.
+
+But consider `IGameStatsService`. In the tests above we pass a real `GameStatsService` and then inspect `engine.History.MoveHistory` to confirm moves were recorded. That works today. What if tomorrow `GameStatsService` persisted moves to a database? Every test would hit a real database — slow, fragile, and hard to set up.
+
+Mocking solves this by replacing a dependency with a **fake object** that you control. You can:
+- Make it return whatever values you need
+- Verify that specific methods were called (or not called) and with what arguments
+
+### What Is Moq?
+
+**Moq** is the standard mocking library for .NET. It lets you create fake implementations of any interface at runtime, no hand-written stub class required.
+
+### Setup
+
+Add the Moq package to the test project:
+
+```bash
+dotnet add TicTacToe.Tests package Moq
+```
+
+Because `GameEngine` currently accepts a concrete `GameStatsService`, we first extract an interface so Moq has something to implement. Add `IGameStatsService` to `TicTacToe.Core`:
+
+```csharp
+namespace TicTacToe.Core;
+
+public interface IGameStatsService
+{
+    List<Move> MoveHistory { get; }
+    List<Move> GlobalMoveHistory { get; }
+    void AddMove(Move move);
+    void ClearHistory();
+}
+```
+
+Have `GameStatsService` implement it:
+
+```csharp
+public class GameStatsService : IGameStatsService { ... }
+```
+
+Update the `GameEngine` constructor to accept `IGameStatsService` instead of the concrete class:
+
+```csharp
+public IGameStatsService History { get; }
+
+public GameEngine(ILogger<GameEngine> logger, IGameStatsService historyService)
+```
+
+Existing tests keep passing because `new GameStatsService()` still satisfies `IGameStatsService`.
+
+### Core Moq Concepts
+
+| Concept | Purpose |
+|---|---|
+| `new Mock<T>()` | Create a mock that implements interface `T` |
+| `mock.Object` | The fake instance to pass as a dependency |
+| `mock.Setup(...)` | Configure what the mock returns for a call |
+| `mock.Verify(...)` | Assert that a method was called as expected |
+| `It.IsAny<T>()` | Match any argument of type `T` |
+| `It.Is<T>(predicate)` | Match only arguments satisfying a condition |
+| `Times.Once` / `Times.Never` | Express how many times a call must happen |
+
+### Example Tests
+
+```csharp
+using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
+using TicTacToe.Core;
+
+public class GameEngineMoqTests
+{
+    private GameEngine CreateEngine(IGameStatsService statsService)
+    {
+        var engine = new GameEngine(NullLogger<GameEngine>.Instance, statsService);
+        engine.SetPlayers(new Player("Alice", 'X'), new Player("Bob", 'O'));
+        engine.SetBoardSize(3);
+        return engine;
+    }
+
+    [Fact]
+    public void TryPlayMove_ValidMove_CallsAddMoveOnce()
+    {
+        var mockStats = new Mock<IGameStatsService>();
+        var engine = CreateEngine(mockStats.Object);
+
+        engine.TryPlayMove(1);
+
+        mockStats.Verify(s => s.AddMove(It.IsAny<Move>()), Times.Once);
+    }
+
+    [Fact]
+    public void TryPlayMove_InvalidMove_DoesNotCallAddMove()
+    {
+        var mockStats = new Mock<IGameStatsService>();
+        var engine = CreateEngine(mockStats.Object);
+
+        engine.TryPlayMove(1); // Alice plays at position 1
+        engine.TryPlayMove(1); // Bob tries the same cell — invalid
+
+        // AddMove should have been called exactly once (Alice's valid move only)
+        mockStats.Verify(s => s.AddMove(It.IsAny<Move>()), Times.Once);
+    }
+
+    [Fact]
+    public void TryPlayMove_ValidMove_PassesCorrectMoveToAddMove()
+    {
+        var mockStats = new Mock<IGameStatsService>();
+        var engine = CreateEngine(mockStats.Object);
+
+        engine.TryPlayMove(5); // Alice plays at position 5 with symbol 'X'
+
+        mockStats.Verify(
+            s => s.AddMove(It.Is<Move>(m => m.Position == 5 && m.Symbol == 'X')),
+            Times.Once);
+    }
+}
+```
+
+### NullLogger vs Moq — When to Use Which
+
+| Situation | Tool |
+|---|---|
+| You just need the dependency to not crash | `NullLogger<T>` / concrete stub |
+| You need to verify the dependency **was called** | Moq `Verify` |
+| You need the dependency to **return specific values** | Moq `Setup` |
+| The real dependency is slow (DB, network, file I/O) | Moq |
+
+---
+
+## 1️⃣2️⃣ Parameterized Tests with `[Theory]`
 
 When the same behavior must be verified for multiple inputs, use `[Theory]` with `[InlineData]`.
 
@@ -484,7 +619,7 @@ xUnit runs this test once per `[InlineData]` row — eight independent test runs
 
 ---
 
-## 1️⃣2️⃣ Common xUnit Assertions
+## 1️⃣3️⃣ Common xUnit Assertions
 
 ### Assert.Equal / Assert.NotEqual
 
@@ -531,7 +666,7 @@ Assert.Contains("Alice", playerNames);
 
 ---
 
-## 1️⃣3️⃣ Assert.Throws
+## 1️⃣4️⃣ Assert.Throws
 
 Use `Assert.Throws` when a method is expected to throw an exception:
 
@@ -546,7 +681,7 @@ Assert.Throws<InvalidOperationException>(() =>
 
 ---
 
-## 1️⃣4️⃣ Naming Tests Properly
+## 1️⃣5️⃣ Naming Tests Properly
 
 A good test name reads like a specification:
 
@@ -572,7 +707,7 @@ A failing test with a good name tells you exactly what broke without reading the
 
 ---
 
-## 1️⃣5️⃣ What to Test and What Not To
+## 1️⃣6️⃣ What to Test and What Not To
 
 ### ✅ Good candidates
 - Game rules (`CheckWin`, `IsDraw`)
@@ -596,5 +731,6 @@ By the end of this lesson, you can:
 - Write clean and meaningful tests using Arrange / Act / Assert
 - Share setup across tests using the class constructor
 - Handle the `ILogger` dependency with `NullLogger<T>`
+- Extract an interface and mock it with Moq to verify interactions without real side effects
 - Test all game behaviors: empty board, valid/invalid moves, player switching, win, and draw
 - Use `[Theory]` to verify all eight winning combinations with a single test method
