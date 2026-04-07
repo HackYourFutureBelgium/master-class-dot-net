@@ -61,7 +61,8 @@ RDBMS: *Microsoft SQL Server*, *SQL Server* is one of the most used relational d
 ([Preparation](week02/preparation.md), [Lesson plan](week02/lesson-plan.md), [Homework](week02/homework.md))
 - Object-oriented programming in C#
 - Encapsulation using access modifiers and properties
-- Structuring the game with `Board`, `Player`, and `GameController` classes
+- Interfaces — defining contracts between classes
+- Structuring the game with `Board`, `Player`, and `GameEngine` classes
 - Game state management using enums
 - Defensive programming and input validation
 - Game loop for multiple rounds
@@ -91,13 +92,13 @@ RDBMS: *Microsoft SQL Server*, *SQL Server* is one of the most used relational d
 
 #### Lesson 5: Creating a Web API & Consuming It
 ([Preparation](week05/preparation.md), [Lesson plan](week05/lesson-plan.md), [Homework](week05/homework.md))
-- Intro to Web APIs:
-  - REST principles
+- Intro to Web APIs and REST principles
+- Threads, async/await, and why they matter for web servers
+- CancellationToken and cooperative cancellation
 - Exposing Game Logic via API:
   - `POST /api/game/move`
   - `GET /api/game/state`
-- Consuming API from MVC:
-  - Using JavaScript/Fetch
+- Consuming API from MVC using JavaScript/Fetch
 - ⚠️ API Error Handling:
   - Custom error responses
   - HTTP status codes (`400`, `500`)
@@ -138,23 +139,23 @@ RDBMS: *Microsoft SQL Server*, *SQL Server* is one of the most used relational d
   - Handling disconnects
   - Preventing message loss
 
-### 🚀 Final phase: Polishing & Optimization
+### 🚀 Final phase: Testing & Production Patterns
 
-#### Lesson 9: Improving Performance & Game Logic
+#### Lesson 9: Unit Testing
 ([Preparation](week09/preparation.md), [Lesson plan](week09/lesson-plan.md), [Homework](week09/homework.md))
-- Optimizing Queries:
-  - Using LINQ efficiently
-  - Preventing redundant API calls
-- Refactoring Code:
-  - Cleaning up the GameService
-- ⚠️ Debugging Best Practices:
-  - Using Rider debugging tools
+- What unit tests are and why they matter
+- Setting up an xUnit test project
+- Writing tests with `[Fact]` and `[Theory]`
+- Testing `Board` and `GameEngine` — including all eight win combinations
+- Handling constructor dependencies with `NullLogger<T>`
+- Mocking dependencies with Moq and verifying interactions
 
-#### Lesson 10: Final Enhancements & Closing
-([Preparation](week10/preparation.md), [Lesson plan](week10/lesson-plan.md), [Homework](week10/homework.md))
-- Extending the Game:
-  - Adding a scoring system
-  - Supporting AI opponents
-- Review & Q&A:
-  - Summary of key concepts
-  - Suggestions for further learning
+#### Lesson 10: Production-Grade Architecture — Blogs API Walkthrough
+([Lesson plan](week10/lesson-plan.md))
+- Live demonstration of a production-ready .NET 9 REST API
+- Clean Architecture / Onion Architecture
+- Domain-Driven Design: aggregates, value objects, domain events
+- CQRS with MediatR as a command dispatcher
+- Repository pattern, Unit of Work, Outbox pattern
+- EF Core (writes) + Dapper (reads), soft delete, fluent configuration
+- JSON Patch, structured logging, health checks, response compression

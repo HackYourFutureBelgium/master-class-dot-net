@@ -1,6 +1,6 @@
 namespace TicTacToe.Core;
 
-public class GameStatsService
+public class GameStatsService : IGameStatsService
 {
     public List<Move> MoveHistory { get; } = new();
     public List<Move> GlobalMoveHistory { get; } = new();

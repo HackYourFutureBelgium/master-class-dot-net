@@ -1,0 +1,322 @@
+###
+# @name Create person
+
+POST {{HostAddress}}/person
+Accept: application/json
+Content-Type: application/json
+
+{
+    "emailAddress": "test@test.com",
+    "fullName": "Test Test"
+}
+
+> {%
+    let newPersonId;
+    client.test("Person created successfully", function () {
+        client.assert(response.status === 201, "Person not created");
+    });
+    client.test("ID is present", function () {
+        client.assert(response.body.hasOwnProperty("id"), "Person ID not found");
+        newPersonId = response.body.id;
+        client.global.set("NewPersonId", newPersonId);
+    });
+%}
+
+###
+# @name Create blog
+
+POST {{HostAddress}}/blog
+Accept: application/json
+Content-Type: application/json
+
+{
+    "title": "New blog",
+    "ownerId": "{{NewPersonId}}",
+    "description": "Blog description"
+}
+
+> {%
+    let newBlogId;
+    client.test("Blog created successfully", function () {
+        client.assert(response.status === 201, "Blog not created");
+    });
+    client.test("ID is present", function () {
+        client.assert(response.body.hasOwnProperty("id"), "Blog ID not found");
+        newBlogId = response.body.id;
+        client.global.set("NewBlogId", newBlogId);
+    });
+%}
+
+
+###
+# @name Create post
+
+POST {{HostAddress}}/post
+Accept: application/json
+Content-Type: application/json
+
+{
+    "blogId": "{{NewBlogId}}",
+    "title": "Post title",
+    "content": "Post content."
+}
+
+> {%
+    let newPostId;
+    client.test("Post created successfully", function () {
+        client.assert(response.status === 201, "Post not created");
+    });
+    client.test("ID is present", function () {
+        client.assert(response.body.hasOwnProperty("id"), "Person ID not found");
+        newPostId = response.body.id;
+        client.global.set("NewPostId", newPostId);
+    });
+    client.test("Location header is correctly set", function () {
+        client.assert(response.headers.valueOf("Location").endsWith(`/post/${newPostId}`), "Location URL is incorrect");
+    });
+    client.test("Title is correct", function () {
+        client.assert(response.body.hasOwnProperty("title"), "Title not found");
+        client.assert(response.body.title === "Post title", "Title is incorrect");
+    });
+    client.test("Content is correct", function () {
+        client.assert(response.body.hasOwnProperty("content"), "Content not found");
+        client.assert(response.body.content === "Post content.", "Content is incorrect");
+    });
+    client.test("PublishedOn is correct", function () {
+        client.assert(response.body.hasOwnProperty("publishedOn"), "PublishedOn not found");
+        client.assert(response.body.publishedOn === null, "PublishedOn is incorrect");
+    });
+    client.test("ArchivedOn is correct", function () {
+        client.assert(response.body.hasOwnProperty("archivedOn"), "ArchivedOn not found");
+        client.assert(response.body.archivedOn === null, "ArchivedOn is incorrect");
+    });
+    client.test("PostStatus is correct", function () {
+        client.assert(response.body.hasOwnProperty("postStatus"), "PostStatus not found");
+        client.assert(response.body.postStatus === "Draft", "PostStatus is incorrect");
+    });
+    client.test("Tags are correct", function () {
+        client.assert(response.body.hasOwnProperty("tags"), "Tags not found");
+        client.assert(response.body.tags.length === 0, "Tags is not empty");
+    });
+    client.test("Comments are correct", function () {
+        client.assert(response.body.hasOwnProperty("comments"), "Comments not found");
+        client.assert(response.body.comments.length === 0, "Comments is not empty");
+    });
+%}
+
+###
+# @name Update post
+
+PATCH {{HostAddress}}/post/{{NewPostId}}
+Accept: application/json
+Content-Type: application/json-patch+json
+
+[
+    {
+        "op": "replace",
+        "path": "/content",
+        "value": "New post content."
+    }
+]
+
+> {%
+    client.test("Post updated successfully", function () {
+        client.assert(response.status === 204, "Post not updated");
+    });
+%}
+
+###
+# @name Verify post update
+
+GET {{HostAddress}}/post/{{NewPostId}}
+Accept: application/json
+
+> {%
+    client.test("Content is correct", function () {
+        client.assert(response.body.hasOwnProperty("content"), "Content not found");
+        client.assert(response.body.content === "New post content.", "Content is incorrect");
+    });
+%}
+
+###
+# @name Add tag to post
+
+POST {{HostAddress}}/post/{{NewPostId}}/tags/DDD
+Accept: application/json
+
+> {%
+    client.test("Tag added successfully", function () {
+        client.assert(response.status === 204, "Tag not added");
+    });
+%}
+
+###
+# @name Verify tag addition
+
+GET {{HostAddress}}/post/{{NewPostId}}
+Accept: application/json
+
+> {%
+    client.test("Tags are correct", function () {
+        client.assert(response.body.hasOwnProperty("tags"), "Tags not found");
+        client.assert(response.body.tags.length === 1, "Tags is empty");
+        client.assert(response.body.tags[0] === "DDD", "Tag is not correct");
+    });
+%}
+
+###
+# @name Add comment to post
+
+POST {{HostAddress}}/post/{{NewPostId}}/comments
+Accept: application/json
+Content-Type: application/json
+
+{
+  "authorId": "{{NewPersonId}}",
+  "content": "Comment by the author."
+}
+> {%
+    client.test("Comment added successfully", function () {
+        client.assert(response.status === 204, "Comment not added");
+    });
+%}
+
+###
+# @name Verify comment addition
+
+GET {{HostAddress}}/post/{{NewPostId}}
+Accept: application/json
+
+> {%
+    client.test("Comments are correct", function () {
+        client.assert(response.body.hasOwnProperty("comments"), "Comments not found");
+        client.assert(response.body.comments.length === 1, "Comments is empty");
+        client.assert(response.body.comments[0].hasOwnProperty("id"), "Comment ID not found");
+        client.global.set("NewCommentId", response.body.comments[0].id);
+        client.assert(response.body.comments[0].hasOwnProperty("content"), "Comment content not found");
+        client.assert(response.body.comments[0].content === "Comment by the author.", "Comments is not correct");
+        client.assert(response.body.comments[0].hasOwnProperty("authorId"), "Comment author not found");
+    });
+%}
+
+###
+# @name Delete tag
+
+DELETE {{HostAddress}}/post/{{NewPostId}}/tags/DDD
+Accept: application/json
+
+> {%
+    client.test("Tag deleted successfully", function () {
+        client.assert(response.status === 204, "Tag not deleted");
+    });
+%}
+
+###
+# @name Verify tag deletion
+
+GET {{HostAddress}}/post/{{NewPostId}}
+Accept: application/json
+
+> {%
+    client.test("Tags are correct", function () {
+        client.assert(response.body.hasOwnProperty("tags"), "Tags not found");
+        client.assert(response.body.tags.length === 0, "Tags is not empty");
+    });
+%}
+
+###
+# @name Delete comment
+
+DELETE {{HostAddress}}/post/{{NewPostId}}/comments/{{NewCommentId}}
+Accept: application/json
+
+> {%
+    client.test("Comment deleted successfully", function () {
+        client.assert(response.status === 204, "Comment not deleted");
+    });
+%}
+
+###
+# @name Verify comment deletion
+
+GET {{HostAddress}}/post/{{NewPostId}}
+Accept: application/json
+
+> {%
+    client.test("Comments are correct", function () {
+        client.assert(response.body.hasOwnProperty("comments"), "Comments not found");
+        client.assert(response.body.comments.length === 0, "Comments is not empty");
+    });
+%}
+
+###
+# @name Delete post
+
+DELETE {{HostAddress}}/post/{{NewPostId}}
+Accept: application/json
+
+> {%
+    client.test("Post deleted successfully", function () {
+        client.assert(response.status === 204, "Post not deleted");
+    });
+%}
+
+###
+# @name Verify post deletion
+
+GET {{HostAddress}}/post/{{NewPostId}}
+Accept: application/json
+
+> {%
+    client.test("Post not found (correct)", function () {
+        client.assert(response.status === 404, "Post found (incorrect)");
+    });
+%}
+
+###
+# @name Delete blog
+
+DELETE {{HostAddress}}/blog/{{NewBlogId}}
+Accept: application/json
+
+> {%
+    client.test("Blog deleted successfully", function () {
+        client.assert(response.status === 204, "Blog not deleted");
+    });
+%}
+
+###
+# @name Verify blog deletion
+
+GET {{HostAddress}}/blog/{{NewBlogId}}
+Accept: application/json
+
+> {%
+    client.test("Blog not found (correct)", function () {
+        client.assert(response.status === 404, "Blog found (incorrect)");
+    });
+%}
+
+###
+# @name Delete person
+
+DELETE {{HostAddress}}/person/{{NewPersonId}}
+Accept: application/json
+
+> {%
+    client.test("Person deleted successfully", function () {
+        client.assert(response.status === 204, "Person not deleted");
+    });
+%}
+
+###
+# @name Verify person deletion
+
+GET {{HostAddress}}/person/{{NewPersonId}}
+Accept: application/json
+
+> {%
+    client.test("Person not found (correct)", function () {
+        client.assert(response.status === 404, "Person found (incorrect)");
+    });
+%}

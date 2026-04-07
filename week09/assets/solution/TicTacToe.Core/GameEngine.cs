@@ -13,9 +13,9 @@ public class GameEngine
     public Player Player2 { get; set; }
     public Player CurrentPlayer => _currentPlayer!;
     public GameStatus Status => _status;
-    public GameStatsService History { get; }
+    public IGameStatsService History { get; }
 
-    public GameEngine(ILogger<GameEngine> logger, GameStatsService historyService)
+    public GameEngine(ILogger<GameEngine> logger, IGameStatsService historyService)
     {
         _logger = logger;
         History = historyService;

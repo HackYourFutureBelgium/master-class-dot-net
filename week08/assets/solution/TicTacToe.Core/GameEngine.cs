@@ -27,7 +27,7 @@ public class GameEngine
         Player2 = p2;
         _currentPlayer = Player1;
     }
-
+    
     public void SetBoardSize(int size)
     {
         Board = new Board(size);

@@ -1,0 +1,292 @@
+###
+# @name Create person
+
+POST {{HostAddress}}/person
+Accept: application/json
+Content-Type: application/json
+
+{
+    "emailAddress": "test@test.com",
+    "fullName": "Test Test"
+}
+
+> {%
+    let newPersonId;
+    client.test("Person created successfully", function () {
+        client.assert(response.status === 201, "Person not created");
+    });
+    client.test("ID is present", function () {
+        client.assert(response.body.hasOwnProperty("id"), "Person ID not found");
+        newPersonId = response.body.id;
+        client.global.set("NewPersonId", newPersonId);
+    });
+    client.test("Location header is correctly set", function () {
+        client.assert(response.headers.valueOf("Location").endsWith(`/person/${newPersonId}`), "Location URL is incorrect");
+    });
+    client.test("Email address is correct", function () {
+        client.assert(response.body.hasOwnProperty("emailAddress"), "Email address not found");
+        client.assert(response.body.emailAddress === "test@test.com", "Email address is incorrect");
+    });
+    client.test("Fullname is correct", function () {
+        client.assert(response.body.hasOwnProperty("fullName"), "Fullname not found");
+        client.assert(response.body.fullName === "Test Test", "Fullname is incorrect");
+    });
+%}
+
+###
+# @name Get person
+
+GET {{HostAddress}}/person/{{NewPersonId}}
+Accept: application/json
+
+> {%
+    client.test("Person retrieved successfully", function () {
+        client.assert(response.status === 200, "Person not found");
+    });
+    client.test("ID is present", function () {
+        client.assert(response.body.hasOwnProperty("id"), "Person ID not found");
+    });
+    client.test("Email address is correct", function () {
+        client.assert(response.body.hasOwnProperty("emailAddress"), "Email address not found");
+        client.assert(response.body.emailAddress === "test@test.com", "Email address is incorrect");
+    });
+    client.test("Fullname is correct", function () {
+        client.assert(response.body.hasOwnProperty("fullName"), "Fullname not found");
+        client.assert(response.body.fullName === "Test Test", "Fullname is incorrect");
+    });
+%}
+
+###
+# @name Update person
+
+PATCH {{HostAddress}}/person/{{NewPersonId}}
+Accept: application/json
+Content-Type: application/json-patch+json
+
+[
+    {
+        "op": "replace",
+        "path": "/shortName",
+        "value": "Seb"
+    }
+]
+
+> {%
+    client.test("Person updated successfully", function () {
+        client.assert(response.status === 204, "Person not updated");
+    });
+%}
+
+###
+# @name Verify person update
+
+GET {{HostAddress}}/person/{{NewPersonId}}
+Accept: application/json
+
+> {%
+    client.test("Short name is correct", function () {
+        client.assert(response.body.hasOwnProperty("shortName"), "Shortname not found");
+        client.assert(response.body.shortName === "Seb", "Shortname is incorrect");
+    });
+%}
+
+###
+# @name Delete person
+
+DELETE {{HostAddress}}/person/{{NewPersonId}}
+Accept: application/json
+
+> {%
+    client.test("Person deleted successfully", function () {
+        client.assert(response.status === 204, "Person not deleted");
+    });
+%}
+
+###
+# @name Verify person deletion
+
+GET {{HostAddress}}/person/{{NewPersonId}}
+Accept: application/json
+
+> {%
+    client.test("Person not found (correct)", function () {
+        client.assert(response.status === 404, "Person found (incorrect)");
+    });
+%}
+
+###
+# @name Create test person 1
+
+POST {{HostAddress}}/person
+Accept: application/json
+Content-Type: application/json
+
+{
+    "emailAddress": "test.person+1@test.com",
+    "fullName": "Test Person 1"
+}
+
+> {%
+    client.test("Test person 1 created successfully", function () {
+        client.assert(response.status === 201, "Test person 1 not created");
+    });
+%}
+
+###
+# @name Create test person 2
+
+POST {{HostAddress}}/person
+Accept: application/json
+Content-Type: application/json
+
+{
+    "emailAddress": "test.person+2@test.com",
+    "fullName": "Test Person 2"
+}
+
+> {%
+    client.test("Test person 2 created successfully", function () {
+        client.assert(response.status === 201, "Test person 2 not created");
+    });
+%}
+
+###
+# @name Create test person 3
+
+POST {{HostAddress}}/person
+Accept: application/json
+Content-Type: application/json
+
+{
+    "emailAddress": "test.person+3@test.com",
+    "fullName": "Test Person 3"
+}
+
+> {%
+    client.test("Test person 3 created successfully", function () {
+        client.assert(response.status === 201, "Test person 3 not created");
+    });
+%}
+
+###
+# @name Create test person 4
+
+POST {{HostAddress}}/person
+Accept: application/json
+Content-Type: application/json
+
+{
+    "emailAddress": "test.person+4@test.com",
+    "fullName": "Test Person 4"
+}
+
+> {%
+    client.test("Test person 4 created successfully", function () {
+        client.assert(response.status === 201, "Test person 4 not created");
+    });
+%}
+
+###
+# @name Create test person 5
+
+POST {{HostAddress}}/person
+Accept: application/json
+Content-Type: application/json
+
+{
+    "emailAddress": "test.person+5@test.com",
+    "fullName": "Test Person 5"
+}
+
+> {%
+    client.test("Test person 5 created successfully", function () {
+        client.assert(response.status === 201, "Test person 5 not created");
+    });
+%}
+
+###
+# @name Search people
+
+GET {{HostAddress}}/person
+    ?search-term=test.person
+    &page-index=1
+    &page-size=10
+    &sort-column=fullName
+    &sort-direction=Descending
+Accept: application/json
+
+> {%
+    client.test("People search executed successfully", function () {
+        client.assert(response.status === 200, "People search failed");
+    });
+    client.test("People search returned expected results", function () {
+        client.assert(response.body.hasOwnProperty("items"), "Missing items");
+        client.assert(response.body.hasOwnProperty("totalNumberOfItems"), "Missing total number of items");
+        client.assert(response.body.items.length >= 5, "Less people than expected found");
+        client.assert(response.body.totalNumberOfItems >= 5, "Less people than expected found");
+        client.global.set("TestPerson1Id", response.body.items[0].id);
+        client.global.set("TestPerson2Id", response.body.items[1].id);
+        client.global.set("TestPerson3Id", response.body.items[2].id);
+        client.global.set("TestPerson4Id", response.body.items[3].id);
+        client.global.set("TestPerson5Id", response.body.items[4].id);
+    });
+    client.test("Pagination is correct", function () {
+        client.assert(response.body.pagination.sortDirection === "Descending", "Sort direction is wrong");
+        client.assert(response.body.pagination.sortColumn === "fullName", "Sort column is wrong");
+    });
+%}
+
+###
+# @name Cleanup test person 1
+
+DELETE {{HostAddress}}/person/{{TestPerson1Id}}
+
+> {%
+    client.test("Person deleted successfully", function () {
+        client.assert(response.status === 204, "Test person 1 not deleted");
+    });
+%}
+
+###
+# @name Cleanup test person 2
+
+DELETE {{HostAddress}}/person/{{TestPerson2Id}}
+
+> {%
+    client.test("Person deleted successfully", function () {
+        client.assert(response.status === 204, "Test person 2 not deleted");
+    });
+%}
+
+###
+# @name Cleanup test person 3
+
+DELETE {{HostAddress}}/person/{{TestPerson3Id}}
+
+> {%
+    client.test("Person deleted successfully", function () {
+        client.assert(response.status === 204, "Test person 3 not deleted");
+    });
+%}
+
+###
+# @name Cleanup test person 4
+
+DELETE {{HostAddress}}/person/{{TestPerson4Id}}
+
+> {%
+    client.test("Person deleted successfully", function () {
+        client.assert(response.status === 204, "Test person 4 not deleted");
+    });
+%}
+
+###
+# @name Cleanup test person 5
+
+DELETE {{HostAddress}}/person/{{TestPerson5Id}}
+
+> {%
+    client.test("Person deleted successfully", function () {
+        client.assert(response.status === 204, "Test person 5 not deleted");
+    });
+%}
