@@ -1,6 +1,6 @@
 # Lesson 10: Production-Grade Architecture — A Blogs API Walkthrough
 
-## Overview
+## 📌 Lesson Overview
 
 This lesson is a demonstration, not a hands-on exercise. We walk through a fully working, production-grade **Blogs REST API** built with .NET 9. The goal is to show how all the concepts from the previous lessons combine into a real-world architecture, and to name every pattern present so you know what to look for — and look up — when you encounter them in the wild.
 
@@ -8,7 +8,56 @@ The solution lives in `week10/assets/solution/`. Open it, follow along, and ask 
 
 ---
 
-## Solution Structure
+## 🧭 Lesson Flow (Recommended)
+
+1. The big picture — solution structure and dependency rules
+2. Clean Architecture — why layers matter
+3. Domain-Driven Design — aggregates, value objects, domain events
+4. Strongly-typed IDs — making the compiler work for you
+5. Enumeration pattern — richer than raw enums
+6. Domain validation — fail fast, always valid
+7. Repository + Unit of Work — data access done right
+8. CQRS with MediatR — separating reads and writes
+9. Outbox pattern — safe event dispatch
+10. Soft delete — preserve history
+11. Read model with Dapper — fast queries, flat DTOs
+12. Explicit operator conversion — mapping without AutoMapper
+13. EF Core fluent configuration — clean mapping
+14. JSON Patch — partial updates the HTTP way
+15. Composition root & DI extensions — wiring it all together
+16. Cross-cutting concerns — logging, health checks, compression, security
+17. What was left intentionally incomplete
+
+---
+
+## 🧠 Mental Model
+
+The entire codebase is built around one rule: **inner layers know nothing about outer layers**.
+
+```
+┌──────────────────────────────────┐
+│  Blogs.Api          (HTTP)        │
+│  ┌────────────────────────────┐  │
+│  │  Blogs.Application         │  │
+│  │  ┌──────────────────────┐  │  │
+│  │  │  Blogs.Core          │  │  │
+│  │  │  (Domain)            │  │  │
+│  │  └──────────────────────┘  │  │
+│  └────────────────────────────┘  │
+│  Blogs.Infrastructure             │
+└──────────────────────────────────┘
+```
+
+- **Core** — pure domain logic, zero framework dependencies
+- **Application** — use cases (commands + queries), depends only on Core
+- **Infrastructure** — EF Core, Dapper, SQL Server; implements Core interfaces
+- **Api** — controllers, Swagger, middleware; the entry point
+
+`Core` has zero external dependencies. Everything else depends on it, never the other way around.
+
+---
+
+## 1️⃣ Solution Structure
 
 ```
 Blogs.sln
@@ -26,39 +75,25 @@ Api → Application → Core
 Api → Infrastructure → Core
 ```
 
-`Core` has zero external dependencies. Everything else depends on it, never the other way around.
+**Where to look:** The `.csproj` references tell the whole story — `Blogs.Core.csproj` references nothing; `Blogs.Infrastructure.csproj` references `Blogs.Core`.
 
 ---
 
-## Pattern 1 — Clean Architecture (Onion Architecture)
+## 2️⃣ Pattern 1 — Clean Architecture (Onion Architecture)
 
 **What it is:** Organises code into concentric layers. The innermost layer (Domain) knows nothing about databases, HTTP, or frameworks. Outer layers implement the interfaces defined by inner layers.
 
 **Why it matters:** You can swap SQL Server for PostgreSQL, or REST for gRPC, without touching domain logic.
 
-```
-┌──────────────────────────────┐
-│  Blogs.Api (HTTP)            │
-│  ┌────────────────────────┐  │
-│  │  Blogs.Application     │  │
-│  │  ┌──────────────────┐  │  │
-│  │  │  Blogs.Core      │  │  │
-│  │  │  (Domain)        │  │  │
-│  │  └──────────────────┘  │  │
-│  └────────────────────────┘  │
-│  Blogs.Infrastructure        │
-└──────────────────────────────┘
-```
-
-**Where to look:** The `.csproj` references tell the whole story — `Blogs.Core.csproj` references nothing; `Blogs.Infrastructure.csproj` references `Blogs.Core`.
+> **Key rule:** source code dependencies only point inward — never outward.
 
 ---
 
-## Pattern 2 — Domain-Driven Design (DDD)
+## 3️⃣ Pattern 2 — Domain-Driven Design (DDD)
 
 DDD is not a single pattern — it is a collection of concepts for modelling complex business domains. Several of them appear here.
 
-### 2a. Aggregate & Aggregate Root
+### 🔹 2a. Aggregate & Aggregate Root
 
 An **aggregate** is a cluster of related objects treated as a single unit for persistence and consistency. The **aggregate root** is the only public entry point into the cluster.
 
@@ -86,7 +121,7 @@ public Comment AddComment(PersonId authorId, string content)
 }
 ```
 
-### 2b. Entity vs Value Object
+### 🔹 2b. Entity vs Value Object
 
 | Concept | Identity | Mutability | Example here |
 |---|---|---|---|
@@ -116,7 +151,7 @@ public class Tag : ValueObject
 }
 ```
 
-### 2c. Domain Events
+### 🔹 2c. Domain Events
 
 A **domain event** is something meaningful that happened in the domain. Aggregates raise them; other parts of the system can react without the aggregate knowing anything about them.
 
@@ -149,15 +184,15 @@ public void Publish()
 }
 ```
 
-The `UnitOfWork` dispatches collected events after the database transaction commits. This is the **Outbox Pattern** (see Pattern 11).
+The `UnitOfWork` dispatches collected events after the database transaction commits. This is the **Outbox Pattern** (see Pattern 9).
 
-### 2d. Ubiquitous Language
+### 🔹 2d. Ubiquitous Language
 
 Method names mirror the business vocabulary. You don't `SetStatus("Published")` — you call `Publish()`. You don't `SetStatus("Draft")` — you call `Unpublish()`. The code reads like the business does.
 
 ---
 
-## Pattern 3 — Strongly-Typed IDs
+## 4️⃣ Pattern 3 — Strongly-Typed IDs
 
 Passing a raw `Guid` everywhere is error-prone. You can accidentally pass a `PersonId` where a `BlogId` is expected — the compiler won't complain.
 
@@ -177,7 +212,7 @@ Now `IBlogRepository.GetByIdAsync(BlogId)` cannot accidentally accept a `PersonI
 
 ---
 
-## Pattern 4 — Enumeration Pattern (Rich Enums)
+## 5️⃣ Pattern 4 — Enumeration Pattern (Rich Enums)
 
 Standard C# `enum` values are just integers. They cannot carry behaviour, and their names are strings that vanish after compilation. The **Enumeration pattern** replaces raw enums with classes that have stable IDs (Guids here) and names.
 
@@ -205,11 +240,11 @@ public class BlogExceptionCode : Enumeration
 }
 ```
 
-Because they have stable Guids, these values survive refactoring (renaming `Draft` to `Pending` doesn't break old data in the database).
+Because they have stable Guids, these values survive refactoring — renaming `Draft` to `Pending` doesn't break old data in the database.
 
 ---
 
-## Pattern 5 — Domain Validation (Fail Fast)
+## 6️⃣ Pattern 5 — Domain Validation (Fail Fast)
 
 Validation lives inside the domain entities, not in controllers or validators. Property setters throw typed exceptions immediately if the invariant is violated:
 
@@ -231,11 +266,11 @@ public string Title
 }
 ```
 
-The domain object is always in a valid state. You can never construct a `Post` with an empty title.
+The domain object is **always in a valid state**. You can never construct a `Post` with an empty title.
 
 ---
 
-## Pattern 6 — Repository Pattern
+## 7️⃣ Pattern 6 — Repository Pattern
 
 A **repository** provides a collection-like interface for accessing aggregates. The domain defines the interface; infrastructure implements it.
 
@@ -265,7 +300,7 @@ The `EntityNotFoundException` is a well-known exception that the HTTP layer can 
 
 ---
 
-## Pattern 7 — Unit of Work
+## 8️⃣ Pattern 7 — Unit of Work
 
 The **Unit of Work** tracks aggregate changes and commits them as a single atomic transaction. It also dispatches domain events after the commit.
 
@@ -284,26 +319,29 @@ await _unitOfWork.CommitAsync();    // persists + dispatches domain events
 ```
 
 The three tracking methods are:
-- `RegisterNew(aggregate)` — INSERT
-- `RegisterDirty(aggregate)` — UPDATE
-- `RegisterDeleted(aggregate)` — DELETE
+
+| Method | SQL operation |
+|---|---|
+| `RegisterNew(aggregate)` | INSERT |
+| `RegisterDirty(aggregate)` | UPDATE |
+| `RegisterDeleted(aggregate)` | DELETE |
 
 ---
 
-## Pattern 8 — CQRS (Command Query Responsibility Segregation)
+## 9️⃣ Pattern 8 — CQRS (Command Query Responsibility Segregation)
 
 **Commands** change state. **Queries** read state. They use different models and different data access paths.
 
 ```
-┌──────────────┐     Commands (write)     ┌────────────────────┐
-│   Controller │ ──────────────────────► │  EF Core + UnitOfWork │
-│              │                          └────────────────────┘
-│              │     Queries (read)       ┌────────────────────┐
-│              │ ──────────────────────► │  Dapper + raw SQL   │
-└──────────────┘                          └────────────────────┘
+┌──────────────┐     Commands (write)     ┌────────────────────────┐
+│  Controller  │ ──────────────────────►  │  EF Core + UnitOfWork  │
+│              │                           └────────────────────────┘
+│              │     Queries (read)        ┌────────────────────────┐
+│              │ ──────────────────────►  │  Dapper + raw SQL      │
+└──────────────┘                           └────────────────────────┘
 ```
 
-### Commands use MediatR as a command dispatcher:
+### Commands use MediatR as a command dispatcher
 
 MediatR is used here not as the classic Mediator design pattern, but as a **command dispatcher** — a mechanism to route each command or query record to its dedicated handler without the controller needing to reference the handler directly.
 
@@ -331,7 +369,7 @@ Controllers dispatch commands via `_mediator.Send(...)` and know nothing about t
 await _mediator.Send(new PublishPostCommand(id));
 ```
 
-Registration — MediatR scans all assemblies and wires up handlers automatically:
+MediatR scans all assemblies and wires up handlers automatically:
 
 ```csharp
 // Application/Extensions/ServiceCollectionExtensions.cs
@@ -339,17 +377,15 @@ services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblies(AppDomain.CurrentDomain.GetAssemblies()));
 ```
 
-### Queries use hand-written SQL via Dapper:
+### Queries use hand-written SQL via Dapper
 
 The read model returns flat DTOs optimised for display — no ORM overhead, no lazy loading, no tracking. See Pattern 11 for the full query example.
 
 ---
 
-## Pattern 9 — Outbox Pattern (Domain Event Dispatch)
+## 🔟 Pattern 9 — Outbox Pattern (Domain Event Dispatch)
 
 Domain events raised inside aggregates are not dispatched immediately. They are collected during the transaction and published **after** the database commit succeeds. This guarantees that events are only fired for changes that actually persisted.
-
-The `DatabaseContextWithOutbox` base class (from the `RootBlocks` library) stores events in a transactional outbox. The `UnitOfWork` flushes them after `CommitAsync()`.
 
 ```
 Post.Publish()
@@ -360,9 +396,11 @@ UnitOfWork.CommitAsync()
   └─ IEventPublisher.Publish(PostPublished)    ← event dispatched
 ```
 
+The `DatabaseContextWithOutbox` base class (from the `RootBlocks` library) stores events in a transactional outbox. The `UnitOfWork` flushes them after `CommitAsync()`.
+
 ---
 
-## Pattern 10 — Soft Delete
+## 1️⃣1️⃣ Pattern 10 — Soft Delete
 
 `Person` entities are never physically deleted. Instead, a `DeletedOn` timestamp is set. All queries filter `WHERE p.DeletedOn IS NULL`.
 
@@ -383,7 +421,7 @@ This preserves referential integrity (a `Blog` still has its `OwnerId`) and enab
 
 ---
 
-## Pattern 11 — Read Model with Dapper (Query Side of CQRS)
+## 1️⃣2️⃣ Pattern 11 — Read Model with Dapper (Query Side of CQRS)
 
 For reads, the application bypasses EF Core entirely and uses **Dapper** — a lightweight micro-ORM that maps raw SQL results to DTOs.
 
@@ -428,7 +466,7 @@ OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;
 
 ---
 
-## Pattern 12 — Explicit Operator Conversion (Domain → DTO)
+## 1️⃣3️⃣ Pattern 12 — Explicit Operator Conversion (Domain → DTO)
 
 Rather than a separate mapper class, DTOs define an `explicit operator` that converts from the domain entity. Mapping logic is co-located with the DTO:
 
@@ -462,7 +500,7 @@ var postDto = (PostDto)post;   // clean, explicit, IDE-navigable
 
 ---
 
-## Pattern 13 — EF Core Fluent Configuration
+## 1️⃣4️⃣ Pattern 13 — EF Core Fluent Configuration
 
 All entity-to-table mappings live in dedicated `IEntityTypeConfiguration<T>` classes, not in the `DbContext` or entity classes. `OnModelCreating` scans the assembly for all of them automatically:
 
@@ -502,7 +540,7 @@ The `SetPropertyAccessMode(PropertyAccessMode.Field)` call tells EF Core to use 
 
 ---
 
-## Pattern 14 — JSON Patch (Partial Updates)
+## 1️⃣5️⃣ Pattern 14 — JSON Patch (Partial Updates)
 
 Instead of `PUT` (replace the whole resource), PATCH endpoints accept a **JSON Patch document** — a list of operations (add, remove, replace, copy, move, test) applied to the existing resource.
 
@@ -528,7 +566,7 @@ await _unitOfWork.CommitAsync(cancellationToken);
 
 ---
 
-## Pattern 15 — Composition Root & Service Registration Extensions
+## 1️⃣6️⃣ Pattern 15 — Composition Root & Service Registration Extensions
 
 All dependency injection wiring happens in one place (the entry point), but each layer owns its own `ServiceCollectionExtensions` so the API layer doesn't need to know the internals of each layer:
 
@@ -550,7 +588,11 @@ services.AddScoped<IPersonQueries, PersonQueries>();
 
 ---
 
-## Pattern 16 — Structured Logging with Serilog
+## 1️⃣7️⃣ Patterns 16–20 — Cross-Cutting Concerns
+
+These patterns apply across the entire application rather than being confined to a single layer.
+
+### 📋 Pattern 16 — Structured Logging with Serilog
 
 The application uses **Serilog** with structured, queryable log events rather than plain text strings. Configuration comes from `appsettings.json`, with a bootstrap logger for startup errors:
 
@@ -567,9 +609,7 @@ builder.Host.UseSerilog((context, _, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 ```
 
----
-
-## Pattern 17 — Health Checks
+### 🏥 Pattern 17 — Health Checks
 
 A `/health` endpoint provides a machine-readable liveness/readiness signal, used by Kubernetes, load balancers, and deployment pipelines:
 
@@ -578,9 +618,7 @@ builder.Services.AddHealthChecks();
 app.MapHealthChecks("/health");
 ```
 
----
-
-## Pattern 18 — Response Compression
+### 🗜️ Pattern 18 — Response Compression
 
 HTTP responses are compressed with **Brotli** (superior to gzip for text/JSON) before being sent to the client:
 
@@ -589,9 +627,7 @@ builder.Services.AddResponseCompression(o => o.Providers.Add<BrotliCompressionPr
 app.UseResponseCompression();
 ```
 
----
-
-## Pattern 19 — SQL Injection Prevention (EncodeForSqlLike)
+### 🛡️ Pattern 19 — SQL Injection Prevention (EncodeForSqlLike)
 
 `LIKE` queries are vulnerable if user input contains `%` or `_`. A utility extension sanitises the search term before embedding it:
 
@@ -608,9 +644,7 @@ LikeSearchTerm = !string.IsNullOrWhiteSpace(searchTerm)
 
 All query parameters are passed as Dapper parameters (never string-concatenated into SQL), which prevents SQL injection by design.
 
----
-
-## Pattern 20 — Constructor Guard Clauses
+### 🔒 Pattern 20 — Constructor Guard Clauses
 
 Every class guards its constructor parameters against null, producing a clear exception with the parameter name rather than a cryptic `NullReferenceException` later:
 
@@ -632,7 +666,7 @@ public class PublishPostCommandHandler(
 
 ---
 
-## What Is Left Intentionally Incomplete
+## ⚠️ What Is Left Intentionally Incomplete
 
 Two things are present but not fully implemented — they are left as exercises or conversation starters:
 
@@ -642,7 +676,7 @@ Two things are present but not fully implemented — they are left as exercises 
 
 ---
 
-## Summary — Pattern Inventory
+## 📊 Summary — Pattern Inventory
 
 | # | Pattern | Layer |
 |---|---|---|
