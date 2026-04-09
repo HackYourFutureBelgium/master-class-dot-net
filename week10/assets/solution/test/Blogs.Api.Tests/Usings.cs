@@ -1,0 +1,15 @@
+global using Blogs.Api.Controllers;
+global using Blogs.Api.Model;
+global using Blogs.Api.Tests.Fakes;
+global using Blogs.Application.Commands.Blogs;
+global using Blogs.Application.Commands.People;
+global using Blogs.Application.Commands.Posts;
+global using Blogs.Core.Domain.AggregatesModel.BlogAggregate;
+global using Blogs.Core.Domain.AggregatesModel.PersonAggregate;
+global using Blogs.Core.Domain.AggregatesModel.PostAggregate;
+global using Blogs.Core.ReadModel;
+global using Microsoft.AspNetCore.JsonPatch;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.Extensions.Logging.Abstractions;
+global using RootBlocks.Exceptions;
+global using RootBlocks.Pagination;

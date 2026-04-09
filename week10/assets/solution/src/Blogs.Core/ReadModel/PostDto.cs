@@ -1,5 +1,6 @@
 namespace Blogs.Core.ReadModel;
 
+[ ExcludeFromCodeCoverage ]
 public class PostDto
 {
     public Guid Id { get; set; }

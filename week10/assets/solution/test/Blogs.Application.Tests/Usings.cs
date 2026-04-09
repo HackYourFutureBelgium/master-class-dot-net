@@ -1,0 +1,14 @@
+global using Blogs.Application.Commands.Blogs;
+global using Blogs.Application.Commands.Blogs.Handlers;
+global using Blogs.Application.Commands.People;
+global using Blogs.Application.Commands.People.Handlers;
+global using Blogs.Application.Commands.Posts;
+global using Blogs.Application.Commands.Posts.Handlers;
+global using Blogs.Application.Tests.Fakes;
+global using Blogs.Core.Domain.AggregatesModel.BlogAggregate;
+global using Blogs.Core.Domain.AggregatesModel.PersonAggregate;
+global using Blogs.Core.Domain.AggregatesModel.PostAggregate;
+global using Blogs.Core.ReadModel;
+global using Microsoft.AspNetCore.JsonPatch;
+global using Microsoft.Extensions.Logging.Abstractions;
+global using RootBlocks.Exceptions;

@@ -1,5 +1,6 @@
 namespace Blogs.Api.Model;
 
+[ ExcludeFromCodeCoverage ]
 public record CreateBlogRequestBody
 {
     public string Title { get; set; } = null!;
